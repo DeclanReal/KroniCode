@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getCurrentDateTime } from '../../utils/functions.js';
 
 export default function IssueLoggerScreen() {
+	const navigate = useNavigate();
 	const [ticket, setTicket] = useState('');
 	const [startTime, setStartTime] = useState(getCurrentDateTime());
 	const [duration, setDuration] = useState('15');
@@ -40,6 +42,8 @@ export default function IssueLoggerScreen() {
 
 	return (
 		<div className="p-4 space-y-2">
+			<button onClick={() => navigate('/settings')}>Open Settings</button>
+
 			{statusMessage && (
 				<div
 					className={`p-2 rounded ${statusType === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'

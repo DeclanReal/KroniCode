@@ -3,23 +3,25 @@ import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 
-import { parseDuration } from '../utils/functions.js';
 import { WorkLogItem } from '../renderer/classes/WorkLogItem.js';
 import { JiraAPI, TempoAPI } from './api/clients.js';
 
 dotenv.config();
 
 const isDev = !app.isPackaged;
-const SERVICE_NAME = 'KroniCode';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 let popupWindow = null;
 let tray = null;
+let reminderInterval = 15 * 60 * 1000;
+let reminderTimer = setInterval(createMainWindow, reminderInterval);
+let isQuitting = false;
 
 // === WINDOW SETUP ===
-function createPopupWindow() {
-	if (popupWindow) {
+function createMainWindow(route = '/popup') {
+	if (popupWindow && !popupWindow.isDestroyed()) {
+		popupWindow.show();
 		popupWindow.focus();
 		return;
 	}
@@ -35,27 +37,63 @@ function createPopupWindow() {
 		},
 	});
 
-	const popupUrl = isDev
+	const startUrl = isDev
 		? 'http://localhost:5173/#/popup'
-		: `file://${path.join(__dirname, '../../dist/index.html')}#/popup`;
+		: `file://${path.join(__dirname, '../../dist/index.html')}#/${route}`;
 
-	popupWindow.loadURL(popupUrl);
+	popupWindow.loadURL(startUrl);
 
 	if (isDev) popupWindow.webContents.openDevTools();
 
-	popupWindow.on('closed', () => {
-		popupWindow = null;
+	popupWindow.on('close', (event) => {
+		if (!isQuitting) {
+			event.preventDefault();
+			popupWindow.hide(); // instead of closing, hide window
+		}
 	});
+}
+
+function showAndNavigateTo(route = '/popup') {
+	if (popupWindow?.isDestroyed()) {
+		popupWindow = null;
+		createMainWindow(route);
+	} else {
+		if (popupWindow.isMinimized()) popupWindow.restore();
+		popupWindow.show();
+		popupWindow.focus();
+		popupWindow.loadURL(
+			isDev
+				? `http://localhost:5173/#${route}`
+				: `file://${path.join(__dirname, '../../dist/index.html')}#${route}`
+		);
+	}
 }
 
 // === TRAY SETUP ===
 function setupTray() {
 	tray = new Tray(path.join(__dirname, '../../public/icon.png'));
+
 	const contextMenu = Menu.buildFromTemplate([
-		{ label: 'Log Time Now', click: createPopupWindow },
+		{
+			label: 'Show App',
+			click: () => {
+				showAndNavigateTo('/popup');
+			}
+		},
+		{ label: 'Log Time Now', click: () => showAndNavigateTo('/popup'), },
+		{ label: 'Settings', click: () => showAndNavigateTo('/settings'), },
 		{ type: 'separator' },
-		{ label: 'Quit', role: 'quit' },
+		{
+			label: 'Quit', click: () => {
+				isQuitting = true;
+				app.quit();
+			}
+		},
 	]);
+
+	tray.on('click', () => {
+		showAndNavigateTo('/popup');
+	});
 
 	tray.setToolTip('KroniCode - Tempo Logger');
 	tray.setContextMenu(contextMenu);
@@ -94,8 +132,28 @@ ipcMain.handle('submit-worklog', async (_event, data) => {
 	await submitWorklog(data);
 });
 
+ipcMain.handle('get-interval', () => reminderInterval / 60000);
+ipcMain.handle('set-interval', (_, minutes) => {
+	reminderInterval = minutes * 60 * 1000;
+	clearInterval(reminderTimer);
+	reminderTimer = setInterval(createMainWindow, reminderInterval);
+});
+
 // === APP READY ===
 app.whenReady().then(() => {
-	createPopupWindow();
+	createMainWindow();
 	setupTray();
+});
+
+app.on('window-all-closed', () => {
+	// Prevent app from quitting when all windows are closed (on Windows/Linux)
+	if (process.platform !== 'darwin') {
+		// Don't quit the app
+	}
+});
+
+app.on('activate', () => {
+	if (BrowserWindow.getAllWindows().length === 0) {
+		createMainWindow();
+	}
 });
