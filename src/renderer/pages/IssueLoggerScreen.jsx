@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentDateTime } from '../../utils/functions.js';
+import { Settings } from 'lucide-react';
 
 export default function IssueLoggerScreen() {
 	const navigate = useNavigate();
@@ -33,6 +34,9 @@ export default function IssueLoggerScreen() {
 			} else {
 				setStatusType('success');
 				setStatusMessage('✅ Worklog submitted successfully!');
+				setTimeout(() => {
+					setStatusMessage('');
+				}, 5000);
 			}
 		} catch (err) {
 			setStatusType('error');
@@ -41,57 +45,68 @@ export default function IssueLoggerScreen() {
 	};
 
 	return (
-		<div className="p-4 space-y-2">
-			<button onClick={() => navigate('/settings')}>Open Settings</button>
 
-			{statusMessage && (
-				<div
-					className={`p-2 rounded ${statusType === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-						}`}
+		<div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
+			<div className="relative bg-white shadow-xl rounded-2xl p-8 w-full max-w-xl space-y-6">
+				<Settings
+					className="absolute top-2 right-2 h-6 w-6 text-gray-600 hover:text-gray-900 cursor-pointer"
+					onClick={() => navigate('/settings')}
+					aria-label="Open Settings"
+				/>
+
+				{statusMessage && (
+					<div
+						className={`p-2 rounded ${statusType === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+							}`}
+					>
+						{statusMessage}
+					</div>
+				)}
+
+				<h2 className="text-xl font-bold">Log Time</h2>
+
+				<span className="font-medium">Issue Number</span>
+				<input
+					type="text"
+					placeholder="Ticket (e.g. PRJ-123)"
+					value={ticket}
+					onChange={e => setTicket(e.target.value)}
+					className="w-full border p-1"
+				/>
+
+				<span className="font-medium">Start Time</span>
+				<input
+					type="datetime-local"
+					value={startTime}
+					onChange={e => setStartTime(e.target.value)}
+					className="w-full border p-1"
+				/>
+
+				<span className="font-medium">Time spent (in minutes)</span>
+				<input
+					type="number"
+					placeholder="Time Spent (min)"
+					title="Time Spent (minutes)"
+					value={duration}
+					onChange={e => setDuration(e.target.value)}
+					className="w-full border p-1"
+				/>
+
+				<span className="font-medium">Description</span>
+				<textarea
+					placeholder="Description"
+					value={description}
+					onChange={e => setDescription(e.target.value)}
+					className="w-full border p-1"
+				/>
+
+				<button
+					onClick={handleSubmit}
+					className="btn"
 				>
-					{statusMessage}
-				</div>
-			)}
-
-			<h2 className="text-xl font-bold">Log Time</h2>
-
-			<input
-				type="text"
-				placeholder="Ticket (e.g. PRJ-123)"
-				value={ticket}
-				onChange={e => setTicket(e.target.value)}
-				className="w-full border p-1"
-			/>
-
-			<input
-				type="datetime-local"
-				value={startTime}
-				onChange={e => setStartTime(e.target.value)}
-				className="w-full border p-1"
-			/>
-
-			<input
-				type="number"
-				placeholder="Time Spent (min)"
-				title="Time Spent (minutes)"
-				value={duration}
-				onChange={e => setDuration(e.target.value)}
-				className="w-full border p-1"
-			/>
-
-			<textarea
-				placeholder="Description"
-				value={description}
-				onChange={e => setDescription(e.target.value)}
-				className="w-full border p-1"
-			/>
-
-			<button
-				onClick={handleSubmit}
-				className="bg-blue-500 text-white px-4 py-2 rounded"
-			>
-				Submit
-			</button>
+					Submit
+				</button>
+			</div>
 		</div>
 	);
 }

@@ -19,6 +19,7 @@ export default [
 				...globals.node,
 			},
 			parserOptions: {
+				sourceType: "module",
 				ecmaFeatures: {
 					jsx: true,
 				},
