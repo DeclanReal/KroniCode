@@ -1,5 +1,39 @@
 [
 	{
+		"version": "1.1.0",
+		"minimal": [
+			"UI/UX Enhancements",
+			"Updates now display progress",
+			"New boot-with-system setting"
+		],
+		"full": [
+			{
+				"title": "Added new setting - Boot with system",
+				"description": "If checked, Kronicode will start with the system on boot."
+			},
+			{
+				"title": "Added a new tray menu display - last logged",
+				"description": "The tray now displays the time of your last successful time log."
+			},
+			{
+				"title": "Added an Update progress display",
+				"description": "When updates are checked/found, etc, the information is displayed in a toast for user quality-of-life. There's even a progress bar :)"
+			},
+			{
+				"title": "Added error boundary",
+				"description": "Any unexpected errors now gracefully show you the big \"OH NO!\" screen."
+			},
+			{
+				"title": "Updated message displays",
+				"description": "Success and error messages now appear in a sleek toast instead of inline."
+			},
+			{
+				"title": "Removed tray menu option - \"Show App\"",
+				"description": "This redundant option has been removed to simplify the tray menu."
+			}
+		]
+	},
+	{
 		"version": "1.0.0",
 		"minimal": [
 			"First release"

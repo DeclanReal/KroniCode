@@ -3,6 +3,7 @@ import path from 'path';
 import { loadCredentials } from './credentials.js';
 import { getIsQuitting } from './simpleStates.js';
 import isDev from 'electron-is-dev';
+import setupAutoUpdater from '../autoUpdaterHandler.js';
 
 const appPath = app.getAppPath();
 
@@ -34,6 +35,12 @@ function createMainWindow(route = '/popup') {
 
 	popupWindow.loadURL(startUrl);
 	if (isDev) popupWindow.webContents.openDevTools();
+
+	// Wait for UI to finish loading before starting the updater
+	popupWindow.webContents.once('did-finish-load', () => {
+		console.log('UI loaded, starting auto updater...');
+		setupAutoUpdater();
+	});
 
 	popupWindow.on('close', (event) => {
 		if (!getIsQuitting()) {
@@ -67,4 +74,8 @@ async function showAndNavigateTo(route = '/popup') {
 	}
 }
 
-export { createMainWindow, showAndNavigateTo };
+function getMainWindow() {
+	return popupWindow;
+}
+
+export { createMainWindow, showAndNavigateTo, getMainWindow };

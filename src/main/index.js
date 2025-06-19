@@ -1,12 +1,11 @@
 import { app, ipcMain } from 'electron';
 import dotenv from 'dotenv';
-import { createMainWindow } from './mainUtils/windowManager.js';
+import { createMainWindow, getMainWindow } from './mainUtils/windowManager.js';
 import { setupTray } from './mainUtils/tray.js';
 import { registerIpcHandlers } from './mainUtils/ipcHandlers.js';
 import { loadCredentials, saveCredentials } from './mainUtils/credentials.js';
 import { store } from './storeConfig.js';
 import { JiraAPI, TempoAPI, initApiClients } from './api/initApiClients.js';
-import setupAutoUpdater from './autoUpdaterHandler.js';
 
 dotenv.config();
 
@@ -15,6 +14,19 @@ let reminderTimer = null;
 
 process.on('unhandledRejection', err => {
 	console.error('🛑 Unhandled Rejection:', err);
+	const mainWindow = getMainWindow();
+
+	if (mainWindow && mainWindow.webContents) {
+		mainWindow.webContents.send('fatal-error', err.message || 'Unknown error');
+	}
+});
+
+process.on('uncaughtException', (err) => {
+	console.error('🔥 Uncaught Exception:', err);
+	const mainWindow = getMainWindow();
+	if (mainWindow && mainWindow.webContents) {
+		mainWindow.webContents.send('fatal-error', err.message || 'Unknown exception');
+	}
 });
 
 async function setReminderTimer(userReminderInterval) {
@@ -32,8 +44,6 @@ app.whenReady().then(async () => {
 	if (isFirstLaunch) {
 		store.set('hasLaunchedBefore', true);
 	}
-
-	setupAutoUpdater();
 
 	const credentials = await loadCredentials();
 	const savedMinutes = store.get('popupInterval');

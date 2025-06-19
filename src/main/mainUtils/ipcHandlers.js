@@ -8,7 +8,10 @@ import { setIsQuitting } from './simpleStates.js';
 
 function registerIpcHandlers(JiraAPI, TempoAPI, reminderInterval, setReminderTimerFn) {
 	ipcMain.removeHandler('quit-app');
+	ipcMain.removeHandler('restart-app');
 	ipcMain.removeHandler('get-app-version');
+	ipcMain.removeHandler('get-startup');
+	ipcMain.removeHandler('set-startup');
 	ipcMain.removeHandler('submit-worklog');
 	ipcMain.removeHandler('get-interval');
 	ipcMain.removeHandler('set-interval');
@@ -21,8 +24,24 @@ function registerIpcHandlers(JiraAPI, TempoAPI, reminderInterval, setReminderTim
 		app.quit();
 	});
 
+	ipcMain.handle("restart-app", () => {
+		app.relaunch();
+		app.exit(0);
+	});
+
 	ipcMain.handle('get-app-version', () => {
 		return app.getVersion();
+	});
+
+	ipcMain.handle("get-startup", () => {
+		return app.getLoginItemSettings().openAtLogin;
+	});
+
+	ipcMain.handle("set-startup", (_event, shouldStart) => {
+		app.setLoginItemSettings({
+			openAtLogin: shouldStart,
+			path: process.execPath,
+		});
 	});
 
 	ipcMain.handle('submit-worklog', async (_, data) => {
