@@ -49,8 +49,7 @@ function AppInsideErrorBoundary() {
 			setFatalError(new Error(message));
 		};
 
-		// window.api.getAppVersion().then(setVersion);
-		setVersion('1.1.0');
+		window.api.getAppVersion().then(setVersion);
 
 		window.api.on("update-status", handleToastStatusChecking);
 
