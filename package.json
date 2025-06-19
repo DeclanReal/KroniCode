@@ -1,7 +1,7 @@
 {
 	"name": "kronicode",
 	"private": true,
-	"version": "0.0.3",
+	"version": "1.0.0",
 	"description": "Log your time seamlessly with Jira + Tempo integration.",
 	"author": "Declan Real",
 	"type": "module",
