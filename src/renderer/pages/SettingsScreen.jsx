@@ -1,6 +1,8 @@
 import { Loader } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Toggle } from '../components/Toggle';
+import ToastBanner from '../components/ToastBanner';
 
 export default function SettingsScreen() {
 	const navigate = useNavigate();
@@ -9,8 +11,9 @@ export default function SettingsScreen() {
 	const [jiraEmail, setJiraEmail] = useState('');
 	const [jiraToken, setJiraToken] = useState('');
 	const [tempoToken, setTempoToken] = useState('');
-	const [statusMessage, setStatusMessage] = useState('');
 	const [loading, setLoading] = useState(false);
+	const [startOnBoot, setStartOnBoot] = useState(false);
+	const [toast, setToast] = useState(null);
 
 	useEffect(() => {
 		if (!window.api) {
@@ -18,6 +21,7 @@ export default function SettingsScreen() {
 			return;
 		}
 
+		window.api.getStartup().then(setStartOnBoot);
 		window.api.getInterval().then(setIntervalValue);
 		window.api.loadCredentials().then(({ jiraDomain, jiraEmail, jiraToken, tempoToken }) => {
 			setJiraDomain(jiraDomain || '');
@@ -27,12 +31,19 @@ export default function SettingsScreen() {
 		});
 	}, []);
 
+	const resetToast = (timeOut) => {
+		setTimeout(() => {
+			setToast(null);
+		}, timeOut);
+	}
+
 	const handleSave = async () => {
-		setStatusMessage(null);
 		setLoading(true);
 
 		try {
 			window.api.setInterval(parseInt(interval));
+			window.api.setStartup(startOnBoot);
+
 			const { success } = await window.api.saveCredentials({
 				jiraDomain,
 				jiraEmail,
@@ -41,95 +52,105 @@ export default function SettingsScreen() {
 			});
 
 			if (!success) {
-				setStatusMessage(`❌ Something went wrong, please check your inputs and try again`);
+				setToast({ message: "❌ Something went wrong, please check your inputs and try again", type: "error" });
+				resetToast(8000);
 			} else {
-				setStatusMessage('✅ Settings saved!');
-				setTimeout(() => {
-					setStatusMessage('');
-				}, 5000);
+				setToast({ message: "✅ Settings saved!", type: "success" });
+				resetToast(3000);
 			}
 		} catch (err) {
-			setStatusMessage(`❌ Something went wrong, please check your inputs and try again`);
+			setToast({ message: "❌ Something went wrong, please check your inputs and try again", type: "error" });
+			resetToast(8000);
 		} finally {
 			setLoading(false);
 		}
 	};
 
+	const toggleStartup = (value) => {
+		setStartOnBoot(value);
+	};
+
 	return (
-		<div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
-			<div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-xl space-y-6">
-				<button className='btn' onClick={() => navigate('/popup')}>← Back to Logger</button>
+		<>
+			<ToastBanner
+				message={toast?.message}
+				visible={!!toast}
+				type={toast?.type}
+				progress={toast?.progress}
+			/>
+			<div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
+				<div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-xl space-y-6">
+					<button className='btn' onClick={() => navigate('/popup')}>← Back to Logger</button>
 
-				{statusMessage && (
-					<div className="p-2 rounded bg-green-100 text-green-700">
-						{statusMessage}
+					<h2 className="text-xl font-bold">Settings</h2>
+
+					<div className="space-y-4">
+						<div>
+							<Toggle label={"Start with system"} checked={startOnBoot} toggleChecked={toggleStartup} />
+						</div>
+
+						<div>
+							<label className="block font-medium mb-1">Popup Interval (minutes): </label>
+							<input
+								value={interval}
+								onChange={e => setIntervalValue(e.target.value)}
+								className="w-full p-2 border rounded"
+							/>
+						</div>
+
+						<div>
+							<label className="block font-medium mb-1">Jira Domain: </label>
+							<input
+								value={jiraDomain}
+								onChange={e => setJiraDomain(e.target.value)}
+								className="w-full p-2 border rounded"
+							/>
+						</div>
+
+						<div>
+							<label className="block font-medium mb-1">Jira Email: </label>
+							<input
+								value={jiraEmail}
+								onChange={e => setJiraEmail(e.target.value)}
+								className="w-full p-2 border rounded"
+							/>
+						</div>
+
+						<div>
+							<label className="block font-medium mb-1">Jira API Token: </label>
+							<input
+								value={jiraToken}
+								onChange={e => setJiraToken(e.target.value)}
+								className="w-full p-2 border rounded"
+							/>
+						</div>
+
+						<div>
+							<label className="block font-medium mb-1">Tempo API Token: </label>
+							<input
+								value={tempoToken}
+								onChange={e => setTempoToken(e.target.value)}
+								className="w-full p-2 border rounded"
+							/>
+						</div>
 					</div>
-				)}
 
-				<h2 className="text-xl font-bold">Settings</h2>
-
-				<div className="space-y-4">
-					<div>
-						<label className="block font-medium mb-1">Popup Interval (minutes): </label>
-						<input
-							value={interval}
-							onChange={e => setIntervalValue(e.target.value)}
-							className="w-full p-2 border rounded"
-						/>
-					</div>
-
-					<div>
-						<label className="block font-medium mb-1">Jira Domain: </label>
-						<input
-							value={jiraDomain}
-							onChange={e => setJiraDomain(e.target.value)}
-							className="w-full p-2 border rounded"
-						/>
-					</div>
-
-					<div>
-						<label className="block font-medium mb-1">Jira Email: </label>
-						<input
-							value={jiraEmail}
-							onChange={e => setJiraEmail(e.target.value)}
-							className="w-full p-2 border rounded"
-						/>
-					</div>
-
-					<div>
-						<label className="block font-medium mb-1">Jira API Token: </label>
-						<input
-							value={jiraToken}
-							onChange={e => setJiraToken(e.target.value)}
-							className="w-full p-2 border rounded"
-						/>
-					</div>
-
-					<div>
-						<label className="block font-medium mb-1">Tempo API Token: </label>
-						<input
-							value={tempoToken}
-							onChange={e => setTempoToken(e.target.value)}
-							className="w-full p-2 border rounded"
-						/>
-					</div>
+					<button
+						onClick={handleSave}
+						className="btn flex items-center justify-center min-w-[180px]"
+						disabled={loading}
+					>
+						{loading ? (
+							<>
+								<Loader className="animate-spin w-4 h-4 mr-2" />
+								Saving...
+							</>
+						) : (
+							'Save'
+						)}
+					</button>
 				</div>
-
-				<button
-					onClick={handleSave}
-					className="btn flex items-center justify-center min-w-[180px]"
-					disabled={loading}
-				>
-					{loading ? (
-						<>
-							<Loader className="animate-spin w-4 h-4 mr-2" />
-							Saving...
-						</>
-					) : (
-						'Save'
-					)}
-				</button>
 			</div>
-		</div>
+		</>
 	);
 }

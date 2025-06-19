@@ -2,6 +2,7 @@ import pkg from 'electron-updater';
 const { autoUpdater } = pkg;
 import { dialog } from 'electron';
 import { store } from './storeConfig.js';
+import { getMainWindow } from './mainUtils/windowManager.js';
 
 function setupAutoUpdater() {
 	autoUpdater.autoDownload = true;
@@ -16,28 +17,28 @@ function setupAutoUpdater() {
 	}
 
 	autoUpdater.on('checking-for-update', () => {
-		console.log('[Updater] Checking for update...');
+		sendStatus('checking');
 	});
 
 	autoUpdater.on('update-available', () => {
-		console.log('[Updater] Update available — downloading...');
+		sendStatus('available');
 	});
 
 	autoUpdater.on('update-not-available', () => {
-		console.log('[Updater] No updates found.');
+		sendStatus('not-available');
 	});
 
 	autoUpdater.on('error', (err) => {
-		console.error('[Updater] Error during update check:', err);
+		sendStatus('error', err);
 	});
 
 	autoUpdater.on('download-progress', (progressObj) => {
 		const percent = Math.round(progressObj.percent);
-		console.log(`[Updater] Download progress: ${percent}%`);
+		sendStatus(`progress`, percent);
 	});
 
 	autoUpdater.on('update-downloaded', () => {
-		console.log('[Updater] Update downloaded.');
+		sendStatus('downloaded');
 
 		dialog.showMessageBox({
 			type: 'info',
@@ -57,6 +58,14 @@ function setupAutoUpdater() {
 	});
 
 	autoUpdater.checkForUpdates();
+}
+
+function sendStatus(status, data) {
+	const win = getMainWindow();
+
+	if (win && win.webContents) {
+		win.webContents.send('update-status', { status, data });
+	}
 }
 
 export default setupAutoUpdater;

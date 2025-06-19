@@ -8,16 +8,19 @@ import isDev from 'electron-is-dev';
 const appPath = app.getAppPath();
 let tray = null;
 let authenticatedPath = '/wizard';
+let credentialsHaveBeenRetrieved = false;
 
 async function setupTray() {
 	const { credentialsRetrieved } = await loadCredentials();
 
-	if (credentialsRetrieved) authenticatedPath = '/popup';
+	if (credentialsRetrieved) {
+		authenticatedPath = '/popup';
+		credentialsHaveBeenRetrieved = true;
+	};
 
 	const contextMenu = Menu.buildFromTemplate([
-		{ label: 'Show App', click: () => showAndNavigateTo(authenticatedPath) },
 		{ label: 'Log Time Now', click: () => showAndNavigateTo(authenticatedPath) },
-		{ label: 'Settings', click: () => showAndNavigateTo(credentialsRetrieved ? '/settings' : 'wizard') },
+		{ label: 'Settings', click: () => showAndNavigateTo(credentialsHaveBeenRetrieved ? '/settings' : 'wizard') },
 		{ label: 'Run Setup Wizard', click: () => showAndNavigateTo('/wizard') },
 		{ type: 'separator' },
 		{
@@ -25,7 +28,9 @@ async function setupTray() {
 				setIsQuitting(true);
 				setTimeout(() => app.quit(), 100); // Small delay to allow flag to register
 			}
-		}
+		},
+		{ type: 'separator' },
+		{ label: `🕒 Last log: N/A`, enabled: false }
 	]);
 
 	// If tray already exists, just update the menu
@@ -45,4 +50,25 @@ async function setupTray() {
 	tray.on('click', () => showAndNavigateTo(authenticatedPath));
 }
 
-export { setupTray };
+function updateTrayStatus(lastLogTime) {
+	if (!tray) return;
+
+	tray.setToolTip(`KroniCode\nLast log: ${lastLogTime}`);
+
+	tray.setContextMenu(Menu.buildFromTemplate([
+		{ label: 'Log Time Now', click: () => showAndNavigateTo(authenticatedPath) },
+		{ label: 'Settings', click: () => showAndNavigateTo(credentialsHaveBeenRetrieved ? '/settings' : 'wizard') },
+		{ label: 'Run Setup Wizard', click: () => showAndNavigateTo('/wizard') },
+		{ type: 'separator' },
+		{
+			label: 'Quit', click: () => {
+				setIsQuitting(true);
+				setTimeout(() => app.quit(), 100); // Small delay to allow flag to register
+			}
+		},
+		{ type: 'separator' },
+		{ label: `🕒 Last log: ${lastLogTime}`, enabled: false }
+	]));
+}
+
+export { setupTray, updateTrayStatus };
