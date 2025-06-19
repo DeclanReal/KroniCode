@@ -1,0 +1,38 @@
+[
+	{
+		"version": "1.0.0",
+		"minimal": [
+			"First release"
+		],
+		"full": [
+			{
+				"title": "Added Setup Wizard",
+				"description": "New users are guided through a simple setup wizard to securely add their Jira and Tempo credentials."
+			},
+			{
+				"title": "Added Time Logging Interface",
+				"description": "A streamlined UI for quickly logging time against Jira issues, including saved credentials and preferences."
+			},
+			{
+				"title": "Secure Credentials",
+				"description": "API tokens and preferences are stored securely using the system's keychain via Keytar, improving privacy and persistence."
+			},
+			{
+				"title": "Added a tray menu",
+				"description": "Enables users quick access to certain menu options through the tray interface."
+			},
+			{
+				"title": "Added the settings page",
+				"description": "A streamlined UI for quick access preferences."
+			},
+			{
+				"title": "Added auto updating",
+				"description": "Streamlined the update process by automatically downloading and installing new updates."
+			},
+			{
+				"title": "Added release notes",
+				"description": "A UI display of new features/bug fixes/quality of life improvements."
+			}
+		]
+	}
+]

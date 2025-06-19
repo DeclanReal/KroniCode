@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentDateTime } from '../../utils/functions.js';
-import { Settings } from 'lucide-react';
+import { Settings, Loader, LogOut } from 'lucide-react';
 
 export default function IssueLoggerScreen() {
 	const navigate = useNavigate();
@@ -11,6 +11,7 @@ export default function IssueLoggerScreen() {
 	const [description, setDescription] = useState('Dev work');
 	const [statusMessage, setStatusMessage] = useState('');
 	const [statusType, setStatusType] = useState(''); // 'success' | 'error'
+	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
 		if (!window.api) {
@@ -24,6 +25,9 @@ export default function IssueLoggerScreen() {
 			setStatusMessage('Electron API not available.');
 			return;
 		}
+
+		setStatusMessage(null);
+		setLoading(true);
 
 		try {
 			const result = await window.api.submitWorklog({ ticket, startTime, duration, description });
@@ -40,14 +44,25 @@ export default function IssueLoggerScreen() {
 			}
 		} catch (err) {
 			setStatusType('error');
-			setStatusMessage(`❌ Error: ${err.message || 'Something went wrong'}`);
+			setStatusMessage(`❌ Something went wrong, please check your inputs and try again`);
+		} finally {
+			setLoading(false);
 		}
+	};
+
+	const handleQuit = () => {
+		window.api.quitApp();
 	};
 
 	return (
 
 		<div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
 			<div className="relative bg-white shadow-xl rounded-2xl p-8 w-full max-w-xl space-y-6">
+				<LogOut
+					className="absolute top-2 left-2 h-6 w-6 text-gray-600 hover:text-red-600 cursor-pointer"
+					onClick={handleQuit}
+					aria-label="Quit KroniCode"
+				/>
 				<Settings
 					className="absolute top-2 right-2 h-6 w-6 text-gray-600 hover:text-gray-900 cursor-pointer"
 					onClick={() => navigate('/settings')}
@@ -99,12 +114,19 @@ export default function IssueLoggerScreen() {
 					onChange={e => setDescription(e.target.value)}
 					className="w-full border p-1"
 				/>
-
 				<button
 					onClick={handleSubmit}
-					className="btn"
+					className="btn flex items-center justify-center min-w-[180px]"
+					disabled={loading}
 				>
-					Submit
+					{loading ? (
+						<>
+							<Loader className="animate-spin w-4 h-4 mr-2" />
+							Submitting...
+						</>
+					) : (
+						'Submit'
+					)}
 				</button>
 			</div>
 		</div>

@@ -1,17 +1,24 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import FieldWithHelp from './FieldWithHelp';
+import { Loader } from 'lucide-react';
 
 export default function StepTempoCredentials({ goNext, goBack, jiraCreds, tempoToken, setTempoToken }) {
 	const [error, setError] = useState(null);
 	const [showToken, setShowToken] = useState(false);
+	const [loading, setLoading] = useState(false);
 
 	const handleValidate = async () => {
+		setError(null);
+		setLoading(true);
+
 		try {
 			await window.api.validateTempo(tempoToken);
 			goNext();
 		} catch (err) {
 			setError('Invalid Tempo token. Please check and try again.');
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -37,7 +44,7 @@ export default function StepTempoCredentials({ goNext, goBack, jiraCreds, tempoT
 				<h2 className="text-xl font-bold">Step 2: Tempo Setup</h2>
 				<FieldWithHelp
 					label="Tempo API Token"
-					helpImage="/tempo-token-example.png"
+					helpImage="tempo-token-example.png"
 					helpText={tempoHelpText}
 				>
 					<div className="relative w-full">
@@ -62,8 +69,19 @@ export default function StepTempoCredentials({ goNext, goBack, jiraCreds, tempoT
 
 				<div className="flex justify-between mt-4">
 					<button onClick={goBack} className="btn">← Back</button>
-					<button onClick={handleValidate} className="btn">
-						Validate & Continue →
+					<button
+						onClick={handleValidate}
+						className="btn flex items-center justify-center min-w-[180px]"
+						disabled={loading}
+					>
+						{loading ? (
+							<>
+								<Loader className="animate-spin w-4 h-4 mr-2" />
+								Validating...
+							</>
+						) : (
+							'Validate & Continue →'
+						)}
 					</button>
 				</div>
 			</div>

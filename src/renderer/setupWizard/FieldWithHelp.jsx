@@ -1,4 +1,3 @@
-// components/FieldWithHelp.jsx
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { HelpCircle } from 'lucide-react';
