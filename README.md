@@ -12,7 +12,10 @@ KroniCode is a semi-automated time tracking desktop app designed for developers 
 - 🔔 Customizable interval reminders for effortless tracking
 - 🔐 Secure token storage with `keytar`
 - ⚡ Fast desktop performance with Electron + Vite
-- 🎯 Cross-platform builds (Windows/macOS)
+- 🛠️ Update checks with progress feedback and toast notifications (new in v1.1.0)
+- 🧠 Smart error handling with a global error boundary (new in v1.1.0)
+- 🪟 "Start with system" setting for seamless boot-up integration (new in v1.1.0)
+- 📅 Tray display shows last successful time log (new in v1.1.0)
 
 ---
 
