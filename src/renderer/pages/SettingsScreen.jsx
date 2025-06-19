@@ -1,3 +1,4 @@
+import { Loader } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,6 +10,7 @@ export default function SettingsScreen() {
 	const [jiraToken, setJiraToken] = useState('');
 	const [tempoToken, setTempoToken] = useState('');
 	const [statusMessage, setStatusMessage] = useState('');
+	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
 		if (!window.api) {
@@ -26,18 +28,31 @@ export default function SettingsScreen() {
 	}, []);
 
 	const handleSave = async () => {
-		window.api.setInterval(parseInt(interval));
-		await window.api.saveCredentials({
-			jiraDomain,
-			jiraEmail,
-			jiraToken,
-			tempoToken,
-		});
+		setStatusMessage(null);
+		setLoading(true);
 
-		setStatusMessage('✅ Settings saved!');
-		setTimeout(() => {
-			setStatusMessage('');
-		}, 5000);
+		try {
+			window.api.setInterval(parseInt(interval));
+			const { success } = await window.api.saveCredentials({
+				jiraDomain,
+				jiraEmail,
+				jiraToken,
+				tempoToken,
+			});
+
+			if (!success) {
+				setStatusMessage(`❌ Something went wrong, please check your inputs and try again`);
+			} else {
+				setStatusMessage('✅ Settings saved!');
+				setTimeout(() => {
+					setStatusMessage('');
+				}, 5000);
+			}
+		} catch (err) {
+			setStatusMessage(`❌ Something went wrong, please check your inputs and try again`);
+		} finally {
+			setLoading(false);
+		}
 	};
 
 	return (
@@ -102,9 +117,17 @@ export default function SettingsScreen() {
 
 				<button
 					onClick={handleSave}
-					className="btn"
+					className="btn flex items-center justify-center min-w-[180px]"
+					disabled={loading}
 				>
-					Save
+					{loading ? (
+						<>
+							<Loader className="animate-spin w-4 h-4 mr-2" />
+							Saving...
+						</>
+					) : (
+						'Save'
+					)}
 				</button>
 			</div>
 		</div>

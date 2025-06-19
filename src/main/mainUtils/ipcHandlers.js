@@ -1,17 +1,29 @@
 import axios from 'axios';
-import { ipcMain } from 'electron';
+import { app, ipcMain } from 'electron';
 import { submitWorklog } from './worklogHandler.js';
 import { loadCredentials } from './credentials.js';
 import { store } from '../storeConfig.js';
 import { attachRetryInterceptor } from '../api/clients.js';
+import { setIsQuitting } from './simpleStates.js';
 
 function registerIpcHandlers(JiraAPI, TempoAPI, reminderInterval, setReminderTimerFn) {
+	ipcMain.removeHandler('quit-app');
+	ipcMain.removeHandler('get-app-version');
 	ipcMain.removeHandler('submit-worklog');
 	ipcMain.removeHandler('get-interval');
 	ipcMain.removeHandler('set-interval');
 	ipcMain.removeHandler('load-credentials');
 	ipcMain.removeHandler('validate-jira');
 	ipcMain.removeHandler('validate-tempo');
+
+	ipcMain.handle('quit-app', async () => {
+		setIsQuitting(true);
+		app.quit();
+	});
+
+	ipcMain.handle('get-app-version', () => {
+		return app.getVersion();
+	});
 
 	ipcMain.handle('submit-worklog', async (_, data) => {
 		await submitWorklog(data, JiraAPI, TempoAPI);

@@ -1,18 +1,17 @@
-import { BrowserWindow } from 'electron';
+import { app, BrowserWindow } from 'electron';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import { loadCredentials } from './credentials.js';
 import { getIsQuitting } from './simpleStates.js';
+import isDev from 'electron-is-dev';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const isDev = !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
+const appPath = app.getAppPath();
 
 let popupWindow = null;
 
 function createMainWindow(route = '/popup') {
 	const startUrl = isDev
 		? `http://localhost:5173/#${route}`
-		: `file://${path.join(__dirname, '../../dist/index.html')}#${route}`;
+		: `file://${path.join(appPath, 'dist', 'index.html')}#${route}`;
 
 	if (popupWindow && !popupWindow.isDestroyed()) {
 		popupWindow.loadURL(startUrl);
@@ -25,8 +24,9 @@ function createMainWindow(route = '/popup') {
 		width: 535,
 		height: 600,
 		alwaysOnTop: false,
+		icon: path.join(appPath, '/public/kronicode_icon.ico'),
 		webPreferences: {
-			preload: path.join(__dirname, '../preload.js'),
+			preload: path.join(appPath, 'src', 'main', 'preload.js'),
 			nodeIntegration: false,
 			contextIsolation: true,
 		},
@@ -61,7 +61,7 @@ async function showAndNavigateTo(route = '/popup') {
 
 		const startUrl = isDev
 			? `http://localhost:5173/#${route}`
-			: `file://${path.join(__dirname, '../../dist/index.html')}#${route}`;
+			: `file://${path.join(appPath, 'dist', 'index.html')}#${route}`;
 
 		popupWindow.loadURL(startUrl);
 	}

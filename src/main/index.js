@@ -6,6 +6,7 @@ import { registerIpcHandlers } from './mainUtils/ipcHandlers.js';
 import { loadCredentials, saveCredentials } from './mainUtils/credentials.js';
 import { store } from './storeConfig.js';
 import { JiraAPI, TempoAPI, initApiClients } from './api/initApiClients.js';
+import setupAutoUpdater from './autoUpdaterHandler.js';
 
 dotenv.config();
 
@@ -26,6 +27,14 @@ async function setReminderTimer(userReminderInterval) {
 }
 
 app.whenReady().then(async () => {
+	const isFirstLaunch = !store.get('hasLaunchedBefore');
+
+	if (isFirstLaunch) {
+		store.set('hasLaunchedBefore', true);
+	}
+
+	setupAutoUpdater();
+
 	const credentials = await loadCredentials();
 	const savedMinutes = store.get('popupInterval');
 
@@ -63,6 +72,7 @@ ipcMain.handle('save-credentials', async (_, creds) => {
 
 	// Re-register IPC handlers (with updated clients)
 	registerIpcHandlers(JiraAPI, TempoAPI, reminderInterval, setReminderTimer);
+	setupTray();
 
 	return { success: true };
 });

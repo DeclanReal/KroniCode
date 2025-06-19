@@ -1,18 +1,24 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import FieldWithHelp from './FieldWithHelp';
+import { Loader } from 'lucide-react';
 
 export default function StepJiraCredentials({ goNext, goBack, jiraCreds, setJiraCreds }) {
 	const [error, setError] = useState(null);
 	const [showToken, setShowToken] = useState(false);
-	const [showHelp, setShowHelp] = useState(false);
+	const [loading, setLoading] = useState(false);
 
 	const handleValidate = async () => {
+		setError(null);
+		setLoading(true);
+
 		try {
 			await window.api.validateJira(jiraCreds);
 			goNext();
 		} catch (err) {
 			setError('Invalid Jira credentials. Please try again.');
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -24,7 +30,7 @@ export default function StepJiraCredentials({ goNext, goBack, jiraCreds, setJira
 				{/* Domain */}
 				<FieldWithHelp
 					label="Jira Domain"
-					helpImage="/jira-domain-example.png"
+					helpImage="jira-domain-example.png"
 					helpText="This is your full Jira domain (including <code>.atlassian.net</code>).
 					For example, if your Jira URL is <code>https://myteam.atlassian.net</code>,
 					your domain is <b>myteam.atlassian.net</b>."
@@ -69,7 +75,7 @@ export default function StepJiraCredentials({ goNext, goBack, jiraCreds, setJira
 				{/* API Token */}
 				<FieldWithHelp
 					label="Jira API Token"
-					helpImage="/jira-token-example.png"
+					helpImage="jira-token-example.png"
 					helpText="
 					<p className='text-sm text-gray-600 mb-1'>
 					Create a token from your Atlassian account at&nbsp;
@@ -123,8 +129,19 @@ export default function StepJiraCredentials({ goNext, goBack, jiraCreds, setJira
 				{/* Navigation */}
 				<div className="flex justify-between mt-4">
 					<button onClick={goBack} className="btn">← Back</button>
-					<button onClick={handleValidate} className="btn">
-						Validate & Continue →
+					<button
+						onClick={handleValidate}
+						className="btn flex items-center justify-center min-w-[180px]"
+						disabled={loading}
+					>
+						{loading ? (
+							<>
+								<Loader className="animate-spin w-4 h-4 mr-2" />
+								Validating...
+							</>
+						) : (
+							'Validate & Continue →'
+						)}
 					</button>
 				</div>
 			</div>

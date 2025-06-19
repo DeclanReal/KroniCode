@@ -2,18 +2,14 @@ import { Tray, Menu, app } from 'electron';
 import path from 'path';
 import { showAndNavigateTo } from './windowManager.js';
 import { setIsQuitting } from './simpleStates.js';
-
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
 import { loadCredentials } from './credentials.js';
+import isDev from 'electron-is-dev';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const appPath = app.getAppPath();
 let tray = null;
 let authenticatedPath = '/wizard';
 
 async function setupTray() {
-	tray = new Tray(path.join(__dirname, '../../../public/icon.png'));
-
 	const { credentialsRetrieved } = await loadCredentials();
 
 	if (credentialsRetrieved) authenticatedPath = '/popup';
@@ -32,6 +28,18 @@ async function setupTray() {
 		}
 	]);
 
+	// If tray already exists, just update the menu
+	if (tray) {
+		tray.setContextMenu(contextMenu);
+		return;
+	}
+
+	// Otherwise, create the tray
+	const iconPath = isDev
+		? path.join(appPath, 'public/kronicode_icon_32x32.png')
+		: path.join(appPath, 'dist/kronicode_icon_32x32.png');
+
+	tray = new Tray(iconPath);
 	tray.setToolTip('KroniCode - Tempo Logger');
 	tray.setContextMenu(contextMenu);
 	tray.on('click', () => showAndNavigateTo(authenticatedPath));

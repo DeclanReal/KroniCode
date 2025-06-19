@@ -1,4 +1,4 @@
-import { WorkLogItem } from '../../renderer/classes/WorkLogItem.js';
+import { WorkLogItem } from "../classes/WorkLogItem.js";
 
 async function submitWorklog(data, JiraAPI, TempoAPI) {
 	const { ticket, startTime, duration, description } = data;

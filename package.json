@@ -1,7 +1,9 @@
 {
 	"name": "kronicode",
 	"private": true,
-	"version": "0.0.2",
+	"version": "0.0.3",
+	"description": "Log your time seamlessly with Jira + Tempo integration.",
+	"author": "Declan Real",
 	"type": "module",
 	"main": "src/main/index.js",
 	"license": "UNLICENSED",
@@ -12,37 +14,59 @@
 		"preview": "vite preview"
 	},
 	"build": {
-		"appId": "com.yourdomain.templogger",
+		"appId": "com.kronicode.app",
+		"productName": "KroniCode",
+		"artifactName": "KroniCodeSetup.${ext}",
 		"files": [
 			"dist",
+			"package.json",
 			"src/main/**/*",
-			"src/renderer/**/*"
+			"src/renderer/**/*",
+			"src/utils/**/*"
 		],
 		"directories": {
-			"buildResources": "assets"
+			"buildResources": "public"
 		},
+		"publish": [
+			{
+				"provider": "github",
+				"owner": "DeclanReal",
+				"repo": "KroniCode"
+			}
+		],
 		"mac": {
-			"target": "dmg"
+			"target": "dmg",
+			"icon": "kronicode_icon.icns"
 		},
 		"win": {
-			"target": "nsis"
+			"target": "nsis",
+			"icon": "kronicode_icon.ico"
+		},
+		"nsis": {
+			"oneClick": false,
+			"allowToChangeInstallationDirectory": true,
+			"createDesktopShortcut": true,
+			"createStartMenuShortcut": true,
+			"shortcutName": "KroniCode"
 		}
 	},
 	"dependencies": {
 		"@radix-ui/react-tooltip": "^1.2.7",
-		"@tailwindcss/postcss": "^4.1.10",
-		"@tailwindcss/vite": "^4.1.10",
+		"axios": "^1.10.0",
 		"dotenv": "^16.5.0",
+		"electron-is-dev": "^3.0.1",
 		"electron-store": "^10.1.0",
+		"electron-updater": "^6.6.2",
 		"keytar": "^7.9.0",
 		"lucide-react": "^0.516.0",
-		"postcss": "^8.5.6",
 		"react": "^19.1.0",
 		"react-dom": "^19.1.0",
 		"react-router-dom": "^7.6.2"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.25.0",
+		"@tailwindcss/postcss": "^4.1.10",
+		"@tailwindcss/vite": "^4.1.10",
 		"@vitejs/plugin-react": "^4.4.1",
 		"autoprefixer": "^10.4.21",
 		"concurrently": "^9.1.2",
@@ -53,6 +77,7 @@
 		"eslint-plugin-react-hooks": "^5.2.0",
 		"eslint-plugin-react-refresh": "^0.4.19",
 		"globals": "^16.0.0",
+		"postcss": "^8.5.6",
 		"tailwindcss": "^4.1.10",
 		"vite": "^6.3.5",
 		"wait-on": "^8.0.3"
