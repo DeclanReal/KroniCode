@@ -19,6 +19,11 @@ export function OnboardingTour({ run, onFinish }) {
 			disableBeacon: true,
 		},
 		{
+			target: '#loggedTime',
+			content: 'You can view your logged time here.',
+			disableBeacon: true,
+		},
+		{
 			target: '#settingsBtn',
 			content: 'Click here to adjust your settings.',
 			disableBeacon: true,

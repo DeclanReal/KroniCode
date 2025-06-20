@@ -15,6 +15,7 @@ contextBridge.exposeInMainWorld('api', {
 	getInterval: () => ipcRenderer.invoke('get-interval'),
 	setInterval: (min) => ipcRenderer.invoke('set-interval', min),
 	submitWorklog: (data) => ipcRenderer.invoke('submit-worklog', data),
+	fetchThisWeeksWorklogs: () => ipcRenderer.invoke('fetch-this-weeks-work-logs'),
 	saveCredentials: (data) => ipcRenderer.invoke('save-credentials', data),
 	loadCredentials: () => ipcRenderer.invoke('load-credentials'),
 	validateJira: (creds) => ipcRenderer.invoke('validate-jira', creds),
