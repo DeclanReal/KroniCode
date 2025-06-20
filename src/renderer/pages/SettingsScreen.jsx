@@ -66,10 +66,6 @@ export default function SettingsScreen() {
 		}
 	};
 
-	const toggleStartup = (value) => {
-		setStartOnBoot(value);
-	};
-
 	return (
 		<>
 			<ToastBanner
@@ -86,11 +82,11 @@ export default function SettingsScreen() {
 
 					<div className="space-y-4">
 						<div>
-							<Toggle label={"Start with system"} checked={startOnBoot} toggleChecked={toggleStartup} />
+							<Toggle label={"Start with system"} checked={startOnBoot} toggleChecked={setStartOnBoot} />
 						</div>
 
 						<div>
-							<label className="block font-medium mb-1">Popup Interval (minutes): </label>
+							<label className="block font-medium mb-1">Remind me every X minutes: </label>
 							<input
 								value={interval}
 								onChange={e => setIntervalValue(e.target.value)}

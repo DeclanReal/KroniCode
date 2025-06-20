@@ -1,5 +1,5 @@
 import { WorkLogItem } from "../classes/WorkLogItem.js";
-import { updateTrayStatus } from "./tray.js";
+import { updateTray } from "./tray.js";
 
 async function submitWorklog(data, JiraAPI, TempoAPI) {
 	const { ticket, startTime, duration, description } = data;
@@ -17,7 +17,7 @@ async function submitWorklog(data, JiraAPI, TempoAPI) {
 	const workItem = new WorkLogItem(authorAccountId, description, issueId, date, time + ':00', duration);
 
 	const res = await TempoAPI.post('/worklogs', workItem);
-	if (res.status === 200) updateTrayStatus(time);
+	if (res.status === 200) updateTray(time);
 }
 
 export { submitWorklog };

@@ -45,7 +45,7 @@ export default function StepFinish({ jiraCreds, tempoToken }) {
 
 				<div>
 					<label htmlFor="popupInterval" className="block text-gray-700 font-medium mb-1">
-						Popup Reminder Interval (minutes)
+						Remind me every X minutes:
 					</label>
 					<input
 						id="popupInterval"
