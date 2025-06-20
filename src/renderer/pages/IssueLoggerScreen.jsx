@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getCurrentDateTime } from '../../utils/functions.js';
 import { Settings, Loader, LogOut } from 'lucide-react';
 import ToastBanner from '../components/ToastBanner.jsx';
+import { OnboardingTour } from '../components/OnboardingTour.jsx';
 
 export default function IssueLoggerScreen() {
 	const navigate = useNavigate();
@@ -12,12 +13,24 @@ export default function IssueLoggerScreen() {
 	const [description, setDescription] = useState('Dev work');
 	const [loading, setLoading] = useState(false);
 	const [toast, setToast] = useState(null);
+	const [runTour, setRunTour] = useState(false);
 
 	useEffect(() => {
 		if (!window.api) {
 			console.error('Electron API not available');
 		}
+
+		const hasSeenTour = localStorage.getItem('hasSeenTour');
+
+		if (hasSeenTour !== 'true') {
+			setRunTour(true);
+		}
 	}, []);
+
+	const handleTourFinish = () => {
+		localStorage.setItem('hasSeenTour', 'true');
+		setRunTour(false);
+	};
 
 	const resetToast = (timeOut) => {
 		setTimeout(() => {
@@ -66,14 +79,18 @@ export default function IssueLoggerScreen() {
 				progress={toast?.progress}
 			/>
 
+			<OnboardingTour run={runTour} onFinish={handleTourFinish} />
+
 			<div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
 				<div className="relative bg-white shadow-xl rounded-2xl p-8 w-full max-w-xl space-y-6">
 					<LogOut
+						id='closeAppBtn'
 						className="absolute top-2 left-2 h-6 w-6 text-gray-600 hover:text-red-600 cursor-pointer"
 						onClick={handleQuit}
 						aria-label="Quit KroniCode"
 					/>
 					<Settings
+						id='settingsBtn'
 						className="absolute top-2 right-2 h-6 w-6 text-gray-600 hover:text-gray-900 cursor-pointer"
 						onClick={() => navigate('/settings')}
 						aria-label="Open Settings"
@@ -81,41 +98,45 @@ export default function IssueLoggerScreen() {
 
 					<h2 className="text-xl font-bold">Log Time</h2>
 
-					<span className="font-medium">Issue Number</span>
-					<input
-						type="text"
-						placeholder="Ticket (e.g. PRJ-123)"
-						value={ticket}
-						onChange={e => setTicket(e.target.value)}
-						className="w-full border p-1"
-					/>
+					<div id='formContainer'>
+						<span className="font-medium">Issue Number</span>
+						<input
+							type="text"
+							placeholder="Ticket (e.g. PRJ-123)"
+							value={ticket}
+							onChange={e => setTicket(e.target.value)}
+							className="w-full border p-1"
+						/>
 
-					<span className="font-medium">Start Time</span>
-					<input
-						type="datetime-local"
-						value={startTime}
-						onChange={e => setStartTime(e.target.value)}
-						className="w-full border p-1"
-					/>
+						<span className="font-medium">Start Time</span>
+						<input
+							type="datetime-local"
+							value={startTime}
+							onChange={e => setStartTime(e.target.value)}
+							className="w-full border p-1"
+						/>
 
-					<span className="font-medium">Time spent (in minutes)</span>
-					<input
-						type="number"
-						placeholder="Time Spent (min)"
-						title="Time Spent (minutes)"
-						value={duration}
-						onChange={e => setDuration(e.target.value)}
-						className="w-full border p-1"
-					/>
+						<span className="font-medium">Time spent (in minutes)</span>
+						<input
+							type="number"
+							placeholder="Time Spent (min)"
+							title="Time Spent (minutes)"
+							value={duration}
+							onChange={e => setDuration(e.target.value)}
+							className="w-full border p-1"
+						/>
 
-					<span className="font-medium">Description</span>
-					<textarea
-						placeholder="Description"
-						value={description}
-						onChange={e => setDescription(e.target.value)}
-						className="w-full border p-1"
-					/>
+						<span className="font-medium">Description</span>
+						<textarea
+							placeholder="Description"
+							value={description}
+							onChange={e => setDescription(e.target.value)}
+							className="w-full border p-1"
+						/>
+					</div>
+
 					<button
+						id='submitWorkLogBtn'
 						onClick={handleSubmit}
 						className="btn flex items-center justify-center min-w-[180px]"
 						disabled={loading}

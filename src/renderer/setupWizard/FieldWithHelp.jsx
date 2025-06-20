@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { HelpCircle } from 'lucide-react';
 import * as Tooltip from '@radix-ui/react-tooltip';
+import { Modal } from '../components/Modal';
 
 export default function FieldWithHelp({ label, children, helpImage, helpText }) {
 	const [showHelp, setShowHelp] = useState(false);
@@ -34,39 +35,31 @@ export default function FieldWithHelp({ label, children, helpImage, helpText }) 
 			{children}
 
 			{showHelp && (
-				<>
-					{/* Blurred background, no black overlay */}
-					<div className="fixed inset-0 z-40 backdrop-blur-sm"></div>
+				<Modal visible={showHelp}>
+					<button
+						type="button"
+						onClick={() => setShowHelp(false)}
+						className="absolute top-3 right-3 text-gray-500 hover:text-gray-900"
+						aria-label="Close help popup"
+					>
+						&#x2715; {/* simple X close icon */}
+					</button>
 
-					{/* Modal content */}
-					<div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-						<div className="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[80vh] overflow-auto p-6 relative">
-							<button
-								type="button"
-								onClick={() => setShowHelp(false)}
-								className="absolute top-3 right-3 text-gray-500 hover:text-gray-900"
-								aria-label="Close help popup"
-							>
-								&#x2715; {/* simple X close icon */}
-							</button>
+					{helpText && (
+						<p
+							className="mb-4 text-gray-700 text-sm"
+							dangerouslySetInnerHTML={{ __html: helpText }}
+						/>
+					)}
 
-							{helpText && (
-								<p
-									className="mb-4 text-gray-700 text-sm"
-									dangerouslySetInnerHTML={{ __html: helpText }}
-								/>
-							)}
-
-							{helpImage && (
-								<img
-									src={helpImage}
-									alt={`${label} help`}
-									className="rounded border border-gray-300 w-full"
-								/>
-							)}
-						</div>
-					</div>
-				</>
+					{helpImage && (
+						<img
+							src={helpImage}
+							alt={`${label} help`}
+							className="rounded border border-gray-300 w-full"
+						/>
+					)}
+				</Modal>
 			)}
 		</div>
 	);
