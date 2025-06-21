@@ -3,7 +3,7 @@
 		"version": "1.2.0",
 		"minimal": [
 			"Guided Onboarding Tour",
-			"Auto reminder Controls",
+			"Auto Reminder Pause Controls",
 			"Logged Time Display",
 			"Added dark mode"
 		],
@@ -13,7 +13,7 @@
 				"description": "Added a guided tour to onboard users with the app and it's functions."
 			},
 			{
-				"title": "Auto Reminder Controls",
+				"title": "Auto Reminder Pause Controls",
 				"description": "You can now pause auto reminders! Choose to pause for 15 minutes, 1 hour, the rest of the day, or indefinitely — all from the tray menu for quick access."
 			},
 			{
