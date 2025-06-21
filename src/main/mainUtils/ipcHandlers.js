@@ -5,6 +5,7 @@ import { loadCredentials } from './credentials.js';
 import { store } from '../storeConfig.js';
 import { attachRetryInterceptor } from '../api/clients.js';
 import { setIsQuitting } from './simpleStates.js';
+import { fetchThisWeeksWorklogs } from './fetchThisWeeksWorklogs.js';
 
 function registerIpcHandlers(JiraAPI, TempoAPI, reminderInterval, setReminderTimerFn) {
 	ipcMain.removeHandler('quit-app');
@@ -13,6 +14,7 @@ function registerIpcHandlers(JiraAPI, TempoAPI, reminderInterval, setReminderTim
 	ipcMain.removeHandler('get-startup');
 	ipcMain.removeHandler('set-startup');
 	ipcMain.removeHandler('submit-worklog');
+	ipcMain.removeHandler('fetch-this-weeks-work-logs');
 	ipcMain.removeHandler('get-interval');
 	ipcMain.removeHandler('set-interval');
 	ipcMain.removeHandler('load-credentials');
@@ -46,6 +48,12 @@ function registerIpcHandlers(JiraAPI, TempoAPI, reminderInterval, setReminderTim
 
 	ipcMain.handle('submit-worklog', async (_, data) => {
 		await submitWorklog(data, JiraAPI, TempoAPI);
+	});
+
+	ipcMain.handle('fetch-this-weeks-work-logs', async (_) => {
+		const result = await fetchThisWeeksWorklogs(JiraAPI, TempoAPI);
+
+		return result;
 	});
 
 	ipcMain.handle('get-interval', () => {

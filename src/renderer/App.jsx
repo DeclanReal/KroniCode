@@ -10,6 +10,7 @@ import WhatsNewPage from './pages/WhatsNewPage';
 import { useEffect, useState } from 'react';
 import WhatsNewModal from './components/WhatsNewModal';
 import ToastBanner from './components/ToastBanner';
+import { ThemeProvider } from './components/ThemeContext';
 
 function AppInsideErrorBoundary() {
 	const [version, setVersion] = useState(null);
@@ -67,7 +68,7 @@ function AppInsideErrorBoundary() {
 	if (!version) return null;
 
 	return (
-		<>
+		<ThemeProvider>
 			<ToastBanner
 				message={toast?.message}
 				visible={!!toast}
@@ -84,7 +85,7 @@ function AppInsideErrorBoundary() {
 				{/* Fallback route */}
 				<Route path="*" element={<div>404 Not Found</div>} />
 			</Routes>
-		</>
+		</ThemeProvider>
 	)
 }
 

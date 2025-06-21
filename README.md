@@ -8,14 +8,15 @@ KroniCode is a semi-automated time tracking desktop app designed for developers 
 
 ## 🚀 Features
 
+- 🧭 Onboarding Tour to help first-time users get oriented (new in v1.2.0)
 - ⏱️ Semi-automated time logging via Tempo + Jira integration
 - 🔔 Customizable interval reminders for effortless tracking
 - 🔐 Secure token storage with `keytar`
 - ⚡ Fast desktop performance with Electron + Vite
-- 🛠️ Update checks with progress feedback and toast notifications (new in v1.1.0)
-- 🧠 Smart error handling with a global error boundary (new in v1.1.0)
-- 🪟 "Start with system" setting for seamless boot-up integration (new in v1.1.0)
-- 📅 Tray display shows last successful time log (new in v1.1.0)
+- 🛠️ Update checks with progress feedback and toast notifications
+- 🧠 Smart error handling with a global error boundary
+- 🪟 "Start with system" setting for seamless boot-up integration
+- 📅 Tray display shows last successful time log
 
 ---
 
@@ -56,7 +57,7 @@ You can always visit **Settings** if you need to update your tokens or preferenc
 
 ```bash
 # Install dependencies
-npm install
+npm install --legacy-peer-deps
 
 # Run in development mode
 npm run dev

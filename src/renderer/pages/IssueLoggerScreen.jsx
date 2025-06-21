@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getCurrentDateTime } from '../../utils/functions.js';
+import { getCurrentDateTime, getTotalTimeSummary } from '../../utils/functions.js';
 import { Settings, Loader, LogOut } from 'lucide-react';
 import ToastBanner from '../components/ToastBanner.jsx';
+import { OnboardingTour } from '../components/OnboardingTour.jsx';
 
 export default function IssueLoggerScreen() {
 	const navigate = useNavigate();
@@ -12,12 +13,41 @@ export default function IssueLoggerScreen() {
 	const [description, setDescription] = useState('Dev work');
 	const [loading, setLoading] = useState(false);
 	const [toast, setToast] = useState(null);
+	const [runTour, setRunTour] = useState(false);
+	const [todaysTimeLogged, setTodaysTimeLogged] = useState('N/A');
+	const [thisWeeksTimeLogged, setThisWeeksTimeLogged] = useState('N/A');
 
 	useEffect(() => {
 		if (!window.api) {
 			console.error('Electron API not available');
 		}
+
+		retrieveUsersWeeklyWorkLogs()
+
+		const hasSeenTour = localStorage.getItem('hasSeenTour');
+
+		if (hasSeenTour !== 'true') {
+			setRunTour(true);
+		}
 	}, []);
+
+	const retrieveUsersWeeklyWorkLogs = async () => {
+		try {
+			const result = await window.api.fetchThisWeeksWorklogs();
+
+			const { today, week } = getTotalTimeSummary(result.results);
+			setTodaysTimeLogged(today);
+			setThisWeeksTimeLogged(week);
+		} catch (err) {
+			setToast({ message: "❌ Could not retrieve this weeks worklogs", type: "error" });
+			resetToast(4000);
+		}
+	}
+
+	const handleTourFinish = () => {
+		localStorage.setItem('hasSeenTour', 'true');
+		setRunTour(false);
+	};
 
 	const resetToast = (timeOut) => {
 		setTimeout(() => {
@@ -44,6 +74,7 @@ export default function IssueLoggerScreen() {
 			} else {
 				setToast({ message: "✅ Worklog submitted successfully!", type: "success" });
 				resetToast(3000);
+				await retrieveUsersWeeklyWorkLogs();
 			}
 		} catch (err) {
 			setToast({ message: "❌ Something went wrong, please check your inputs and try again", type: "error" });
@@ -66,56 +97,66 @@ export default function IssueLoggerScreen() {
 				progress={toast?.progress}
 			/>
 
-			<div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
-				<div className="relative bg-white shadow-xl rounded-2xl p-8 w-full max-w-xl space-y-6">
+			<OnboardingTour run={runTour} onFinish={handleTourFinish} />
+
+			<div className="flex items-center justify-center min-h-screen bg-gray-100 px-4 darkMode">
+				<div className="relative bg-white shadow-xl rounded-2xl p-8 w-full max-w-xl space-y-6 darkMode">
 					<LogOut
-						className="absolute top-2 left-2 h-6 w-6 text-gray-600 hover:text-red-600 cursor-pointer"
+						id='closeAppBtn'
+						className="absolute top-2 left-2 h-6 w-6 text-gray-600 hover:text-red-600 cursor-pointer dark:text-white"
 						onClick={handleQuit}
 						aria-label="Quit KroniCode"
 					/>
 					<Settings
-						className="absolute top-2 right-2 h-6 w-6 text-gray-600 hover:text-gray-900 cursor-pointer"
+						id='settingsBtn'
+						className="absolute top-2 right-2 h-6 w-6 text-gray-600 hover:text-gray-900 cursor-pointer dark:text-white"
 						onClick={() => navigate('/settings')}
 						aria-label="Open Settings"
 					/>
 
+					<br />
+
 					<h2 className="text-xl font-bold">Log Time</h2>
 
-					<span className="font-medium">Issue Number</span>
-					<input
-						type="text"
-						placeholder="Ticket (e.g. PRJ-123)"
-						value={ticket}
-						onChange={e => setTicket(e.target.value)}
-						className="w-full border p-1"
-					/>
+					<div id='formContainer'>
+						<span className="font-medium">Issue Number</span>
+						<input
+							type="text"
+							placeholder="Ticket (e.g. PRJ-123)"
+							value={ticket}
+							onChange={e => setTicket(e.target.value)}
+							className="w-full border p-1"
+						/>
 
-					<span className="font-medium">Start Time</span>
-					<input
-						type="datetime-local"
-						value={startTime}
-						onChange={e => setStartTime(e.target.value)}
-						className="w-full border p-1"
-					/>
+						<span className="font-medium">Start Time</span>
+						<input
+							type="datetime-local"
+							value={startTime}
+							onChange={e => setStartTime(e.target.value)}
+							className="w-full border p-1"
+						/>
 
-					<span className="font-medium">Time spent (in minutes)</span>
-					<input
-						type="number"
-						placeholder="Time Spent (min)"
-						title="Time Spent (minutes)"
-						value={duration}
-						onChange={e => setDuration(e.target.value)}
-						className="w-full border p-1"
-					/>
+						<span className="font-medium">Time spent (in minutes)</span>
+						<input
+							type="number"
+							placeholder="Time Spent (min)"
+							title="Time Spent (minutes)"
+							value={duration}
+							onChange={e => setDuration(e.target.value)}
+							className="w-full border p-1"
+						/>
 
-					<span className="font-medium">Description</span>
-					<textarea
-						placeholder="Description"
-						value={description}
-						onChange={e => setDescription(e.target.value)}
-						className="w-full border p-1"
-					/>
+						<span className="font-medium">Description</span>
+						<textarea
+							placeholder="Description"
+							value={description}
+							onChange={e => setDescription(e.target.value)}
+							className="w-full border p-1"
+						/>
+					</div>
+
 					<button
+						id='submitWorkLogBtn'
 						onClick={handleSubmit}
 						className="btn flex items-center justify-center min-w-[180px]"
 						disabled={loading}
@@ -129,6 +170,11 @@ export default function IssueLoggerScreen() {
 							'Submit'
 						)}
 					</button>
+
+					<div id='loggedTime' className="text-xs text-gray-600 text-right p-2 border-t dark:text-white">
+						<strong>Logged today:</strong> {todaysTimeLogged} &nbsp;|&nbsp;
+						<strong>This week:</strong> {thisWeeksTimeLogged}
+					</div>
 				</div>
 			</div>
 		</>

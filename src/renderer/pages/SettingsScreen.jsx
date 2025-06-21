@@ -1,8 +1,9 @@
 import { Loader } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Toggle } from '../components/Toggle';
 import ToastBanner from '../components/ToastBanner';
+import { ThemeContext } from '../components/ThemeContext';
 
 export default function SettingsScreen() {
 	const navigate = useNavigate();
@@ -14,6 +15,7 @@ export default function SettingsScreen() {
 	const [loading, setLoading] = useState(false);
 	const [startOnBoot, setStartOnBoot] = useState(false);
 	const [toast, setToast] = useState(null);
+	const { darkMode, toggleDarkMode } = useContext(ThemeContext);
 
 	useEffect(() => {
 		if (!window.api) {
@@ -43,6 +45,7 @@ export default function SettingsScreen() {
 		try {
 			window.api.setInterval(parseInt(interval));
 			window.api.setStartup(startOnBoot);
+			localStorage.setItem('darkMode', darkMode);
 
 			const { success } = await window.api.saveCredentials({
 				jiraDomain,
@@ -66,9 +69,17 @@ export default function SettingsScreen() {
 		}
 	};
 
-	const toggleStartup = (value) => {
-		setStartOnBoot(value);
-	};
+	const handleBack = () => {
+		const saved = localStorage.getItem('darkMode') === 'true';
+		const originalMode = saved;
+
+		if (originalMode !== darkMode) {
+			toggleDarkMode(originalMode);
+			localStorage.setItem('darkMode', originalMode);
+		}
+
+		navigate('/popup');
+	}
 
 	return (
 		<>
@@ -78,19 +89,23 @@ export default function SettingsScreen() {
 				type={toast?.type}
 				progress={toast?.progress}
 			/>
-			<div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
-				<div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-xl space-y-6">
-					<button className='btn' onClick={() => navigate('/popup')}>← Back to Logger</button>
+			<div className="flex items-center justify-center min-h-screen bg-gray-100 px-4 darkMode">
+				<div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-xl space-y-6 darkMode">
+					<button className='btn' onClick={handleBack}>← Back to Logger</button>
 
 					<h2 className="text-xl font-bold">Settings</h2>
 
 					<div className="space-y-4">
 						<div>
-							<Toggle label={"Start with system"} checked={startOnBoot} toggleChecked={toggleStartup} />
+							<Toggle label={"Toggle Dark Mode"} checked={darkMode} toggleChecked={toggleDarkMode} />
 						</div>
 
 						<div>
-							<label className="block font-medium mb-1">Popup Interval (minutes): </label>
+							<Toggle label={"Start with system"} checked={startOnBoot} toggleChecked={setStartOnBoot} />
+						</div>
+
+						<div>
+							<label className="block font-medium mb-1">Remind me every X minutes: </label>
 							<input
 								value={interval}
 								onChange={e => setIntervalValue(e.target.value)}

@@ -36,16 +36,16 @@ export default function StepFinish({ jiraCreds, tempoToken }) {
 	};
 
 	return (
-		<div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
-			<div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-xl space-y-6">
+		<div className="flex items-center justify-center min-h-screen bg-gray-100 px-4 darkMode">
+			<div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-xl space-y-6 darkMode">
 				<div className="flex justify-center">
 					<h2 className="text-xl font-bold">All Set!</h2>
 				</div>
 				<p>Your credentials have been verified and securely stored. You can now start logging your work effortlessly.</p>
 
 				<div>
-					<label htmlFor="popupInterval" className="block text-gray-700 font-medium mb-1">
-						Popup Reminder Interval (minutes)
+					<label htmlFor="popupInterval" className="block text-gray-700 font-medium mb-1 dark:text-white">
+						Remind me every X minutes:
 					</label>
 					<input
 						id="popupInterval"

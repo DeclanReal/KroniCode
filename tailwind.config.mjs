@@ -1,5 +1,6 @@
-module.exports = {
-	content: ["./src/**/*.{js,jsx,ts,tsx}"],
+export default {
+	darkMode: 'class',
+	content: ["./src/renderer/**/*.{js,jsx,ts,tsx}"],
 	theme: {
 		extend: {
 			fontFamily: {

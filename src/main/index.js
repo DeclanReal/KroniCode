@@ -1,7 +1,7 @@
 import { app, ipcMain } from 'electron';
 import dotenv from 'dotenv';
 import { createMainWindow, getMainWindow } from './mainUtils/windowManager.js';
-import { setupTray } from './mainUtils/tray.js';
+import { isReminderPaused, setupTray } from './mainUtils/tray.js';
 import { registerIpcHandlers } from './mainUtils/ipcHandlers.js';
 import { loadCredentials, saveCredentials } from './mainUtils/credentials.js';
 import { store } from './storeConfig.js';
@@ -35,7 +35,11 @@ async function setReminderTimer(userReminderInterval) {
 
 	if (!credentialsRetrieved) return;
 
-	reminderTimer = setInterval(() => createMainWindow('/popup'), userReminderInterval);
+	reminderTimer = setInterval(() => {
+		if (isReminderPaused()) return;
+
+		createMainWindow('/popup')
+	}, userReminderInterval);
 }
 
 app.whenReady().then(async () => {
