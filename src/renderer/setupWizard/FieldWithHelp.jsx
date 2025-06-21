@@ -8,8 +8,8 @@ export default function FieldWithHelp({ label, children, helpImage, helpText }) 
 	const [showHelp, setShowHelp] = useState(false);
 
 	return (
-		<div className="relative space-y-2">
-			<div className="flex items-center gap-1 mb-1 text-sm text-gray-700 font-semibold">
+		<div className="relative space-y-2 darkMode">
+			<div className="flex items-center gap-1 mb-1 text-sm text-gray-700 font-semibold darkMode">
 				<span className="font-medium">{label}</span>
 				{/* Tooltip with Radix */}
 				<Tooltip.Provider>
@@ -39,7 +39,7 @@ export default function FieldWithHelp({ label, children, helpImage, helpText }) 
 					<button
 						type="button"
 						onClick={() => setShowHelp(false)}
-						className="absolute top-3 right-3 text-gray-500 hover:text-gray-900"
+						className="absolute top-3 right-3 text-gray-500 hover:text-gray-900 dark:text-gray-200 dark:hover:text-gray-400"
 						aria-label="Close help popup"
 					>
 						&#x2715; {/* simple X close icon */}
@@ -47,7 +47,7 @@ export default function FieldWithHelp({ label, children, helpImage, helpText }) 
 
 					{helpText && (
 						<p
-							className="mb-4 text-gray-700 text-sm"
+							className="mb-4 text-gray-700 text-sm dark:text-white"
 							dangerouslySetInnerHTML={{ __html: helpText }}
 						/>
 					)}

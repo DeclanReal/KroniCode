@@ -17,8 +17,8 @@ export default function StepWelcome({ goNext }) {
 	}, [])
 
 	return (
-		<div className="min-h-screen flex items-center justify-center bg-white">
-			<div className="p-6 space-y-6 max-w-md text-center">
+		<div className="min-h-screen flex items-center justify-center bg-white darkMode">
+			<div className="p-6 space-y-6 max-w-md text-center darkMode">
 				<h2 className="text-2xl font-bold">Welcome to KroniCode</h2>
 				<p>Let’s get you set up to log your time automatically to Jira and Tempo.</p>
 

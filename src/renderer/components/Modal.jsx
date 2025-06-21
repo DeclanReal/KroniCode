@@ -32,7 +32,7 @@ export function Modal({ visible, children }) {
 			>
 				<div
 					className={`bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[80vh]
-						overflow-auto p-6 transform transition-all duration-500 ${showAnimation ? "scale-100 opacity-100" : "scale-95 opacity-0"}`}
+						overflow-auto p-6 transform transition-all duration-500 ${showAnimation ? "scale-100 opacity-100" : "scale-95 opacity-0"} darkMode`}
 				>
 					{children}
 				</div>

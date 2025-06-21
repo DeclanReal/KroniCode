@@ -99,20 +99,22 @@ export default function IssueLoggerScreen() {
 
 			<OnboardingTour run={runTour} onFinish={handleTourFinish} />
 
-			<div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
-				<div className="relative bg-white shadow-xl rounded-2xl p-8 w-full max-w-xl space-y-6">
+			<div className="flex items-center justify-center min-h-screen bg-gray-100 px-4 darkMode">
+				<div className="relative bg-white shadow-xl rounded-2xl p-8 w-full max-w-xl space-y-6 darkMode">
 					<LogOut
 						id='closeAppBtn'
-						className="absolute top-2 left-2 h-6 w-6 text-gray-600 hover:text-red-600 cursor-pointer"
+						className="absolute top-2 left-2 h-6 w-6 text-gray-600 hover:text-red-600 cursor-pointer dark:text-white"
 						onClick={handleQuit}
 						aria-label="Quit KroniCode"
 					/>
 					<Settings
 						id='settingsBtn'
-						className="absolute top-2 right-2 h-6 w-6 text-gray-600 hover:text-gray-900 cursor-pointer"
+						className="absolute top-2 right-2 h-6 w-6 text-gray-600 hover:text-gray-900 cursor-pointer dark:text-white"
 						onClick={() => navigate('/settings')}
 						aria-label="Open Settings"
 					/>
+
+					<br />
 
 					<h2 className="text-xl font-bold">Log Time</h2>
 
@@ -169,7 +171,7 @@ export default function IssueLoggerScreen() {
 						)}
 					</button>
 
-					<div id='loggedTime' className="text-xs text-gray-600 text-right p-2 border-t">
+					<div id='loggedTime' className="text-xs text-gray-600 text-right p-2 border-t dark:text-white">
 						<strong>Logged today:</strong> {todaysTimeLogged} &nbsp;|&nbsp;
 						<strong>This week:</strong> {thisWeeksTimeLogged}
 					</div>

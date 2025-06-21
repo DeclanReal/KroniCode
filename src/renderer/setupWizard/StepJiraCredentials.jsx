@@ -23,8 +23,8 @@ export default function StepJiraCredentials({ goNext, goBack, jiraCreds, setJira
 	};
 
 	return (
-		<div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
-			<div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-xl space-y-6">
+		<div className="flex items-center justify-center min-h-screen bg-gray-100 px-4 darkMode">
+			<div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-xl space-y-6 darkMode">
 				<h2 className="text-xl font-bold">Step 1: Jira Setup</h2>
 
 				{/* Domain */}
@@ -56,7 +56,7 @@ export default function StepJiraCredentials({ goNext, goBack, jiraCreds, setJira
 							href='https://id.atlassian.com/manage-profile/profile-and-visibility'
 							target='_blank'
 							rel='noreferrer'
-							style='color: #2563EB; text-decoration: underline;'
+							class='text-blue-600 underline dark:text-blue-300'
 						>
 							Account Settings
 						</a>
@@ -83,7 +83,7 @@ export default function StepJiraCredentials({ goNext, goBack, jiraCreds, setJira
 							href='https://id.atlassian.com/manage-profile/security/api-tokens'
 							target='_blank'
 							rel='noreferrer'
-							style='color: #2563EB; text-decoration: underline;'
+							class='text-blue-600 underline dark:text-blue-300'
 						>
 							atlassian.com/api-tokens
 						</a>

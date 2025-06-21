@@ -35,7 +35,7 @@ export default function WhatsNewModal({ version }) {
 	return (
 		<Modal visible={isVisible}>
 			<h2 className="text-xl font-semibold mb-3">KroniCode updated to v{version}</h2>
-			<ul className="list-disc list-inside space-y-3 text-gray-800">
+			<ul className="list-disc list-inside space-y-3 text-gray-800 dark:text-white">
 				{notes.map((note, i) => (
 					<li key={i}>{note}</li>
 				))}
