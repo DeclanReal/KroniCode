@@ -4,7 +4,8 @@
 		"minimal": [
 			"Guided Onboarding Tour",
 			"Auto reminder Controls",
-			"Logged Time Display"
+			"Logged Time Display",
+			"Added dark mode"
 		],
 		"full": [
 			{
@@ -18,6 +19,10 @@
 			{
 				"title": "Logged Time Display",
 				"description": "You can now view your total time logged for today and the current week."
+			},
+			{
+				"title": "Added dark mode",
+				"description": "You can switch between light and dark themes in Settings."
 			}
 		]
 	},
