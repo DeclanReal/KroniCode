@@ -6,6 +6,7 @@ import { useState } from 'react';
 export function OnboardingTour({ run, onFinish }) {
 	const [tourStartModal, setTourStartModal] = useState(true);
 	const [tourEndModal, setTourEndModal] = useState(false);
+	const darkMode = localStorage.getItem('darkMode') === 'true';
 
 	const steps = [
 		{
@@ -94,6 +95,11 @@ export function OnboardingTour({ run, onFinish }) {
 				styles={{
 					options: {
 						zIndex: 10000,
+						arrowColor: darkMode ? '#1f2937' : '#fff',            // Dark bg or light bg
+						backgroundColor: darkMode ? '#1f2937' : '#fff',       // Overlay tooltip background
+						overlayColor: darkMode ? 'rgba(31, 41, 55, 0.75)' : 'rgba(255,255,255,0.75)', // Overlay color
+						primaryColor: darkMode ? '#3b82f6' : '#2563eb',       // Highlighted button color
+						textColor: darkMode ? '#d1d5db' : '#111827',          // Text color
 					},
 				}}
 			/>
