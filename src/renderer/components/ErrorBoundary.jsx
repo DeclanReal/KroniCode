@@ -27,10 +27,10 @@ export class ErrorBoundary extends React.Component {
 	render() {
 		if (this.state.hasError) {
 			return (
-				<div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
-					<div className="relative bg-white shadow-xl rounded-2xl p-8 w-full max-w-xl space-y-6 text-red-600 text-center">
+				<div className="flex items-center justify-center min-h-screen bg-gray-100 px-4 darkMode">
+					<div className="relative bg-white shadow-xl rounded-2xl p-8 w-full max-w-xl space-y-6 text-red-600 text-center darkMode">
 						<LogOut
-							className="absolute top-2 left-2 h-6 w-6 text-gray-600 hover:text-red-600 cursor-pointer"
+							className="absolute top-2 left-2 h-6 w-6 text-gray-600 hover:text-red-600 cursor-pointer dark:text-white dark:hover:text-red-600"
 							onClick={this.handleQuit}
 							aria-label="Quit KroniCode"
 						/>

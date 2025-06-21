@@ -23,24 +23,22 @@ export default function StepTempoCredentials({ goNext, goBack, jiraCreds, tempoT
 	};
 
 	const tempoHelpText = `
-		<p style="font-size: 0.875rem; color: #4B5563; margin-bottom: 0.5rem;">
-			To generate a token:<br />
-			<b>Go to Tempo → Settings → API Integration → New Token</b><br />
-			Or visit:&nbsp;
-				<a
-				href="https://${jiraCreds.domain}/plugins/servlet/ac/io.tempo.jira/tempo-app#!/configuration/api-integration"
-				target="_blank"
-				rel="noreferrer"
-				style="color: #2563EB; text-decoration: underline;"
-				>
-				your integrated Tempo app settings
-				</a>
-		</p>
-	`;
+		To generate a token:<br />
+		<b>Go to Tempo → Settings → API Integration → New Token</b><br />
+		Or visit:&nbsp;
+		<a
+			href="https://${jiraCreds.domain}/plugins/servlet/ac/io.tempo.jira/tempo-app#!/configuration/api-integration"
+			target="_blank"
+			rel="noreferrer"
+			class="text-blue-600 underline dark:text-blue-300"
+		>
+			your integrated Tempo app settings
+		</a>
+`;
 
 	return (
-		<div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
-			<div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-xl space-y-6">
+		<div className="flex items-center justify-center min-h-screen bg-gray-100 px-4 darkMode">
+			<div className="bg-white shadow-xl rounded-2xl p-8 w-full max-w-xl space-y-6 darkMode">
 				<h2 className="text-xl font-bold">Step 2: Tempo Setup</h2>
 				<FieldWithHelp
 					label="Tempo API Token"

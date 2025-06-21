@@ -1,7 +1,18 @@
 @import "tailwindcss";
+@config "../../tailwind.config.mjs";
 
 @layer components {
 	.btn {
 		@apply bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded cursor-pointer transition shadow hover:shadow-lg;
+	}	
+}
+
+@layer utilities {
+	.darkMode {
+		@apply dark:bg-gray-900 dark:text-white transition-colors duration-300;
+	}
+
+	.dark input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+		filter: invert(1);
 	}
 }

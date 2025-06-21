@@ -11,7 +11,7 @@ export default function WhatsNewPage({ version }) {
 	const notes = releaseEntry ? releaseEntry.full : [];
 
 	return (
-		<div className="p-8 max-w-3xl mx-auto">
+		<div className="p-8 max-w-3xl mx-auto darkMode">
 			<h1 className="text-3xl font-bold mb-6">What’s New in KroniCode v{version}</h1>
 			<ul className="list-disc list-inside space-y-3 text-gray-800">
 				{notes.map((item, i) => (
