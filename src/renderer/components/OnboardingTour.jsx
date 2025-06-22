@@ -13,26 +13,31 @@ export function OnboardingTour({ run, onFinish }) {
 			target: '#formContainer',
 			content: 'Make sure you fill in all these fields before logging time.',
 			disableBeacon: true,
+			title: "Required Fields"
 		},
 		{
 			target: '#submitWorkLogBtn',
 			content: 'Click here to log your time.',
 			disableBeacon: true,
+			title: "Submitting your work"
 		},
 		{
 			target: '#loggedTime',
 			content: 'You can view your logged time here.',
 			disableBeacon: true,
+			title: "View your logged time!"
 		},
 		{
 			target: '#settingsBtn',
 			content: 'Click here to adjust your settings.',
 			disableBeacon: true,
+			title: "Changing your settings"
 		},
 		{
 			target: '#closeAppBtn',
 			content: 'Click here to quit the app.',
 			disableBeacon: true,
+			title: "Quitting the app"
 		}
 	];
 
@@ -95,11 +100,11 @@ export function OnboardingTour({ run, onFinish }) {
 				styles={{
 					options: {
 						zIndex: 10000,
-						arrowColor: darkMode ? '#1f2937' : '#fff',            // Dark bg or light bg
-						backgroundColor: darkMode ? '#1f2937' : '#fff',       // Overlay tooltip background
-						overlayColor: darkMode ? 'rgba(31, 41, 55, 0.75)' : 'rgba(255,255,255,0.75)', // Overlay color
-						primaryColor: darkMode ? '#3b82f6' : '#2563eb',       // Highlighted button color
-						textColor: darkMode ? '#d1d5db' : '#111827',          // Text color
+						arrowColor: '#fff',						// Overlay arrow color
+						backgroundColor: '#fff',				// Overlay background
+						overlayColor: 'rgba(0, 0, 0, 0.75)',	// Background tinting
+						primaryColor: '#2563eb',				// Overlay button color
+						textColor: '#111827',					// Overlay Text color
 					},
 				}}
 			/>
