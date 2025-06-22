@@ -8,11 +8,26 @@ import setupAutoUpdater from '../autoUpdaterHandler.js';
 const appPath = app.getAppPath();
 
 let popupWindow = null;
+let splash = null;
 
 function createMainWindow(route = '/popup') {
 	const startUrl = isDev
 		? `http://localhost:5173/#${route}`
 		: `file://${path.join(appPath, 'dist', 'index.html')}#${route}`;
+
+	const splashUrl = isDev
+		? 'http://localhost:5173/#/splash'
+		: `file://${path.join(appPath, 'dist', 'index.html')}#/splash`;
+
+	splash = new BrowserWindow({
+		width: 300,
+		height: 150,
+		frame: false,
+		transparent: true,
+		alwaysOnTop: true,
+	});
+
+	splash.loadURL(splashUrl);
 
 	if (popupWindow && !popupWindow.isDestroyed()) {
 		popupWindow.loadURL(startUrl);
@@ -25,6 +40,8 @@ function createMainWindow(route = '/popup') {
 		width: 535,
 		height: 600,
 		alwaysOnTop: false,
+		show: false,
+		focusable: false,
 		icon: path.join(appPath, '/public/kronicode_icon.ico'),
 		webPreferences: {
 			preload: path.join(appPath, 'src', 'main', 'preload.js'),
@@ -37,7 +54,15 @@ function createMainWindow(route = '/popup') {
 	if (isDev) popupWindow.webContents.openDevTools();
 
 	// Wait for UI to finish loading before starting the updater
+	// Display splash until UI is finished loading, then destroy splash and show main window
 	popupWindow.webContents.once('did-finish-load', () => {
+		popupWindow.setFocusable(true);
+
+		if (splash) splash.destroy();
+
+		popupWindow.show();
+		popupWindow.focus();
+
 		console.log('UI loaded, starting auto updater...');
 		setupAutoUpdater();
 	});

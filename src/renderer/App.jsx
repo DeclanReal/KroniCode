@@ -11,12 +11,15 @@ import { useContext, useEffect, useState } from 'react';
 import WhatsNewModal from './components/WhatsNewModal';
 import ToastBanner from './components/ToastBanner';
 import { ThemeContext, ThemeProvider } from './components/ThemeContext';
+import SplashScreen from './pages/SplashScreen';
+import { useLocation } from 'react-router-dom';
 
 function AppInsideErrorBoundary() {
 	const [version, setVersion] = useState(null);
 	const [fatalError, setFatalError] = useState(null);
 	const [toast, setToast] = useState(null);
 	const { toggleDarkMode } = useContext(ThemeContext);
+	const location = useLocation();
 
 	function handleToastStatusChecking({ status, data }) {
 		switch (status) {
@@ -63,6 +66,8 @@ function AppInsideErrorBoundary() {
 	}
 
 	useEffect(() => {
+		if (location.pathname === '/splash') return;
+
 		const handler = (message) => {
 			setFatalError(new Error(message));
 		};
@@ -82,6 +87,10 @@ function AppInsideErrorBoundary() {
 			window.api.removeListener('update-status', handleToastStatusChecking);
 		};
 	}, []);
+
+	if (location.pathname === '/splash') {
+		return <SplashScreen />;
+	}
 
 	if (fatalError) throw fatalError;
 
