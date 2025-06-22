@@ -24,4 +24,5 @@ contextBridge.exposeInMainWorld('api', {
 	getStartup: () => ipcRenderer.invoke('get-startup'),
 	setStartup: (shouldStart) => ipcRenderer.invoke('set-startup', shouldStart),
 	restartApp: () => ipcRenderer.invoke('restart-app'),
+	onRunGuidedTour: (callback) => ipcRenderer.on('run-guided-tour', callback)
 });

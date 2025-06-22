@@ -22,6 +22,12 @@ export default function IssueLoggerScreen() {
 			console.error('Electron API not available');
 		}
 
+		if (window.api.onRunGuidedTour) {
+			window.api.onRunGuidedTour(() => {
+				setRunTour(true);
+			});
+		}
+
 		retrieveUsersWeeklyWorkLogs()
 
 		const hasSeenTour = localStorage.getItem('hasSeenTour');

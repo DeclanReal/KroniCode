@@ -1,5 +1,4 @@
 import { app, ipcMain } from 'electron';
-import dotenv from 'dotenv';
 import { createMainWindow, getMainWindow } from './mainUtils/windowManager.js';
 import { isReminderPaused, setupTray } from './mainUtils/tray.js';
 import { registerIpcHandlers } from './mainUtils/ipcHandlers.js';
@@ -7,7 +6,6 @@ import { loadCredentials, saveCredentials } from './mainUtils/credentials.js';
 import { store } from './storeConfig.js';
 import { JiraAPI, TempoAPI, initApiClients } from './api/initApiClients.js';
 
-dotenv.config();
 
 let reminderInterval = 15 * 60 * 1000;
 let reminderTimer = null;
@@ -24,6 +22,7 @@ process.on('unhandledRejection', err => {
 process.on('uncaughtException', (err) => {
 	console.error('🔥 Uncaught Exception:', err);
 	const mainWindow = getMainWindow();
+
 	if (mainWindow && mainWindow.webContents) {
 		mainWindow.webContents.send('fatal-error', err.message || 'Unknown exception');
 	}
@@ -57,17 +56,17 @@ app.whenReady().then(async () => {
 	} else {
 		const { jiraDomain, jiraEmail, jiraToken, tempoToken } = credentials;
 		await initApiClients({ jiraDomain, jiraEmail, jiraToken, tempoToken });
+
 		if (!JiraAPI || !TempoAPI) throw new Error('API Clients unavailable');
+
 		createMainWindow('/popup');
 	}
 
-	if (savedMinutes) {
-		reminderInterval = savedMinutes * 60 * 1000;
-	}
+	if (savedMinutes) reminderInterval = savedMinutes * 60 * 1000;
 
-	registerIpcHandlers(JiraAPI, TempoAPI, reminderInterval, setReminderTimer);
-	setupTray();
-	setReminderTimer(reminderInterval);
+	registerIpcHandlers(JiraAPI, TempoAPI, reminderInterval, async (userReminderInterval) => await setReminderTimer(userReminderInterval));
+	await setupTray();
+	await setReminderTimer(reminderInterval);
 });
 
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') return; });
@@ -85,8 +84,8 @@ ipcMain.handle('save-credentials', async (_, creds) => {
 	await initApiClients({ jiraDomain, jiraEmail, jiraToken, tempoToken });
 
 	// Re-register IPC handlers (with updated clients)
-	registerIpcHandlers(JiraAPI, TempoAPI, reminderInterval, setReminderTimer);
-	setupTray();
+	registerIpcHandlers(JiraAPI, TempoAPI, reminderInterval, async (userReminderInterval) => await setReminderTimer(userReminderInterval));
+	await setupTray();
 
 	return { success: true };
 });

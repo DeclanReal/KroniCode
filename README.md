@@ -27,7 +27,6 @@ KroniCode is a semi-automated time tracking desktop app designed for developers 
 - **Electron** – for building the desktop experience  
 - **React + Vite** – for the blazing-fast frontend  
 - **Keytar** – for secure credential storage  
-- **dotenv** – for managing local environment variables  
 - **Jira/Tempo APIs** – for seamless time entry integration
 
 ---
