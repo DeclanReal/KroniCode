@@ -1,6 +1,6 @@
 import { Tray, Menu, app } from 'electron';
 import path from 'path';
-import { showAndNavigateTo } from './windowManager.js';
+import { getMainWindow, showAndNavigateTo } from './windowManager.js';
 import { setIsQuitting } from './simpleStates.js';
 import { loadCredentials } from './credentials.js';
 import {
@@ -50,9 +50,17 @@ export { setupTray, updateTray, isReminderPaused };
 
 function buildTrayMenu(lastLogTime = 'N/A', pathToShow = '*', pauseNote = '') {
 	return Menu.buildFromTemplate([
-		{ label: 'Log Time Now', click: () => showAndNavigateTo(pathToShow) },
-		{ label: 'Settings', click: () => showAndNavigateTo(pathToShow === '/popup' ? 'settings' : '/wizard') },
-		{ label: 'Run Setup Wizard', click: () => showAndNavigateTo('/wizard') },
+		{ label: 'Log Time Now', click: async () => await showAndNavigateTo(pathToShow) },
+		{ label: 'Settings', click: async () => await showAndNavigateTo(pathToShow === '/popup' ? 'settings' : '/wizard') },
+		{ label: 'Run Setup Wizard', click: async () => await showAndNavigateTo('/wizard') },
+		{
+			label: 'Run Guided Tour',
+			click: async () => {
+				await showAndNavigateTo(pathToShow)
+				const mainWindow = getMainWindow();
+				mainWindow.webContents.send('run-guided-tour');
+			}
+		},
 		{
 			label: 'Pause Reminders',
 			submenu: [
