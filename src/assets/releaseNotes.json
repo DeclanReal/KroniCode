@@ -2,12 +2,32 @@
 	{
 		"version": "1.3.0",
 		"minimal": [
-			"Now uses System Preference for initial theme"
+			"Now uses System Preference for initial theme",
+			"Added option to rerun the onboarding tour",
+			"Added splash screen",
+			"Bugfix for onboarding tour",
+			"Added Board Key Selection"
 		],
 		"full": [
 			{
 				"title": "Now uses System Preference for initial theme",
 				"description": "Before a user selects a theme, the theme of the app is now dictated by the users theme preference set on their system."
+			},
+			{
+				"title": "Added option to rerun the onboarding tour",
+				"description": "Users can now rerun the Onboarding tour via the try menu."
+			},
+			{
+				"title": "Added splash screen",
+				"description": "KroniCode now displays a loading screen before the app finishes its load."
+			},
+			{
+				"title": "Added Board Key Selection",
+				"description": "Added a dropdown option to select the board the ticket belongs to. Now the user only needs to select the board and enter the ticket number."
+			},
+			{
+				"title": "Bugfix: Onboarding Tour",
+				"description": "The Onboarding tour was not correctly highlighting elements - this has been fixed."
 			}
 		]
 	},
