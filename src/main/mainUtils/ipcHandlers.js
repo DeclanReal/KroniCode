@@ -6,6 +6,7 @@ import { store } from '../storeConfig.js';
 import { attachRetryInterceptor } from '../api/clients.js';
 import { setIsQuitting } from './simpleStates.js';
 import { fetchThisWeeksWorklogs } from './fetchThisWeeksWorklogs.js';
+import { fetchBoardKeys } from './fetchBoardKeys.js';
 
 function registerIpcHandlers(JiraAPI, TempoAPI, reminderInterval, setReminderTimerFn) {
 	ipcMain.removeHandler('quit-app');
@@ -13,6 +14,7 @@ function registerIpcHandlers(JiraAPI, TempoAPI, reminderInterval, setReminderTim
 	ipcMain.removeHandler('get-app-version');
 	ipcMain.removeHandler('get-startup');
 	ipcMain.removeHandler('set-startup');
+	ipcMain.removeHandler('fetch-board-keys');
 	ipcMain.removeHandler('submit-worklog');
 	ipcMain.removeHandler('fetch-this-weeks-work-logs');
 	ipcMain.removeHandler('get-interval');
@@ -52,6 +54,12 @@ function registerIpcHandlers(JiraAPI, TempoAPI, reminderInterval, setReminderTim
 
 	ipcMain.handle('fetch-this-weeks-work-logs', async (_) => {
 		const result = await fetchThisWeeksWorklogs(JiraAPI, TempoAPI);
+
+		return result;
+	});
+
+	ipcMain.handle('fetch-board-keys', async () => {
+		const result = await fetchBoardKeys(JiraAPI);
 
 		return result;
 	});

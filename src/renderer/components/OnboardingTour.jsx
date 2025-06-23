@@ -6,7 +6,6 @@ import { useState } from 'react';
 export function OnboardingTour({ run, onFinish }) {
 	const [tourStartModal, setTourStartModal] = useState(true);
 	const [tourEndModal, setTourEndModal] = useState(false);
-	const darkMode = localStorage.getItem('darkMode') === 'true';
 
 	const steps = [
 		{

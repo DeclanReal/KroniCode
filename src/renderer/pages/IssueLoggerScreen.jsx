@@ -4,6 +4,7 @@ import { getCurrentDateTime, getTotalTimeSummary } from '../../utils/functions.j
 import { Settings, Loader, LogOut } from 'lucide-react';
 import ToastBanner from '../components/ToastBanner.jsx';
 import { OnboardingTour } from '../components/OnboardingTour.jsx';
+import { Dropdown } from '../components/DropDown.jsx';
 
 export default function IssueLoggerScreen() {
 	const navigate = useNavigate();
@@ -16,6 +17,8 @@ export default function IssueLoggerScreen() {
 	const [runTour, setRunTour] = useState(false);
 	const [todaysTimeLogged, setTodaysTimeLogged] = useState('N/A');
 	const [thisWeeksTimeLogged, setThisWeeksTimeLogged] = useState('N/A');
+	const [boardKeys, setBoardKeys] = useState([]);
+	const [selectedBoardKey, setSelectedBoardKey] = useState();
 
 	useEffect(() => {
 		if (!window.api) {
@@ -29,6 +32,7 @@ export default function IssueLoggerScreen() {
 		}
 
 		retrieveUsersWeeklyWorkLogs()
+		retrieveBoardKeys()
 
 		const hasSeenTour = localStorage.getItem('hasSeenTour');
 
@@ -46,6 +50,23 @@ export default function IssueLoggerScreen() {
 			setThisWeeksTimeLogged(week);
 		} catch (err) {
 			setToast({ message: "❌ Could not retrieve this weeks worklogs", type: "error" });
+			resetToast(4000);
+		}
+	}
+
+	const retrieveBoardKeys = async () => {
+		try {
+			const result = await window.api.fetchBoardKeys();
+
+			const boards = result.values.map(board => ({
+				id: board.id,
+				key: board.key,
+				name: board.name
+			}));
+
+			setBoardKeys(boards);
+		} catch (err) {
+			setToast({ message: "❌ Could not retrieve board keys", type: "error" });
 			resetToast(4000);
 		}
 	}
@@ -72,7 +93,9 @@ export default function IssueLoggerScreen() {
 		setLoading(true);
 
 		try {
-			const result = await window.api.submitWorklog({ ticket, startTime, duration, description });
+			const formattedTicket = `${selectedBoardKey}-${ticket}`;
+
+			const result = await window.api.submitWorklog({ formattedTicket, startTime, duration, description });
 
 			if (result?.error) {
 				setToast({ message: "❌ Something went wrong, please check your inputs and try again", type: "error" });
@@ -109,13 +132,13 @@ export default function IssueLoggerScreen() {
 				<div className="relative bg-white shadow-xl rounded-2xl p-8 w-full max-w-xl space-y-6 darkMode">
 					<LogOut
 						id='closeAppBtn'
-						className="absolute top-2 left-2 h-6 w-6 text-gray-600 hover:text-red-600 cursor-pointer dark:text-white"
+						className="absolute top-2 left-2 h-6 w-6 text-gray-600 hover:text-red-600 cursor-pointer dark:text-white dark:hover:text-red-600"
 						onClick={handleQuit}
 						aria-label="Quit KroniCode"
 					/>
 					<Settings
 						id='settingsBtn'
-						className="absolute top-2 right-2 h-6 w-6 text-gray-600 hover:text-gray-900 cursor-pointer dark:text-white"
+						className="absolute top-2 right-2 h-6 w-6 text-gray-600 hover:text-gray-900 cursor-pointer dark:text-white dark:hover:text-gray-500"
 						onClick={() => navigate('/settings')}
 						aria-label="Open Settings"
 					/>
@@ -124,15 +147,28 @@ export default function IssueLoggerScreen() {
 
 					<h2 className="text-xl font-bold">Log Time</h2>
 
-					<div id='formContainer'>
-						<span className="font-medium">Issue Number</span>
-						<input
-							type="text"
-							placeholder="Ticket (e.g. PRJ-123)"
-							value={ticket}
-							onChange={e => setTicket(e.target.value)}
-							className="w-full border p-1"
-						/>
+					<div id='formContainer' className='space-y-4'>
+						<div className="flex flex-col gap-2">
+							<label className="font-medium">Ticket Number</label>
+
+							<div className="flex items-center gap-2">
+								<Dropdown
+									defaultValue='Select Project Key'
+									options={boardKeys}
+									value={selectedBoardKey}
+									onChange={setSelectedBoardKey}
+								/>
+								<span className="font-bold text-gray-600 dark:text-white">-</span>
+
+								<input
+									type="text"
+									placeholder="Ticket Number (e.g. 123)"
+									value={ticket}
+									onChange={e => setTicket(e.target.value)}
+									className="w-full border rounded px-2 py-1 text-black dark:text-white bg-white dark:bg-gray-800"
+								/>
+							</div>
+						</div>
 
 						<span className="font-medium">Start Time</span>
 						<input

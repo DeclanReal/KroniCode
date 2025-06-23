@@ -9,6 +9,7 @@ const appPath = app.getAppPath();
 
 let popupWindow = null;
 let splash = null;
+let loaded = false;
 
 function createMainWindow(route = '/popup') {
 	const startUrl = isDev
@@ -19,15 +20,17 @@ function createMainWindow(route = '/popup') {
 		? 'http://localhost:5173/#/splash'
 		: `file://${path.join(appPath, 'dist', 'index.html')}#/splash`;
 
-	splash = new BrowserWindow({
-		width: 300,
-		height: 150,
-		frame: false,
-		transparent: true,
-		alwaysOnTop: true,
-	});
+	if (!loaded) {
+		splash = new BrowserWindow({
+			width: 300,
+			height: 150,
+			frame: false,
+			transparent: true,
+			alwaysOnTop: true,
+		});
 
-	splash.loadURL(splashUrl);
+		splash.loadURL(splashUrl);
+	}
 
 	if (popupWindow && !popupWindow.isDestroyed()) {
 		popupWindow.loadURL(startUrl);
@@ -38,7 +41,7 @@ function createMainWindow(route = '/popup') {
 
 	popupWindow = new BrowserWindow({
 		width: 535,
-		height: 600,
+		height: 650,
 		alwaysOnTop: false,
 		show: false,
 		focusable: false,
@@ -56,6 +59,7 @@ function createMainWindow(route = '/popup') {
 	// Wait for UI to finish loading before starting the updater
 	// Display splash until UI is finished loading, then destroy splash and show main window
 	popupWindow.webContents.once('did-finish-load', () => {
+		loaded = true;
 		popupWindow.setFocusable(true);
 
 		if (splash) splash.destroy();
@@ -63,7 +67,6 @@ function createMainWindow(route = '/popup') {
 		popupWindow.show();
 		popupWindow.focus();
 
-		console.log('UI loaded, starting auto updater...');
 		setupAutoUpdater();
 	});
 
