@@ -2,32 +2,49 @@
 	{
 		"version": "1.3.0",
 		"minimal": [
-			"Now uses System Preference for initial theme",
+			"System Theme Preference Support",
 			"Added option to rerun the onboarding tour",
 			"Added splash screen",
 			"Bugfix for onboarding tour",
-			"Added Board Key Selection"
+			"Added Board Key Selection",
+			"Added recent ticket suggestion display",
+			"Improved release notes display"
 		],
 		"full": [
 			{
-				"title": "Now uses System Preference for initial theme",
-				"description": "Before a user selects a theme, the theme of the app is now dictated by the users theme preference set on their system."
+				"title": "System Theme Preference Support",
+				"description": "Before a user selects a theme manually, KroniCode now uses the system’s dark/light preference for its initial appearance.",
+				"type": "improvement"
 			},
 			{
-				"title": "Added option to rerun the onboarding tour",
-				"description": "Users can now rerun the Onboarding tour via the try menu."
+				"title": "Rerun the Onboarding Tour",
+				"description": "Users can now restart the onboarding tour at any time via the tray menu.",
+				"type": "feature"
 			},
 			{
-				"title": "Added splash screen",
-				"description": "KroniCode now displays a loading screen before the app finishes its load."
+				"title": "Splash screen",
+				"description": "KroniCode now displays a loading screen while the app initializes, providing a smoother startup experience.",
+				"type": "feature"
 			},
 			{
-				"title": "Added Board Key Selection",
-				"description": "Added a dropdown option to select the board the ticket belongs to. Now the user only needs to select the board and enter the ticket number."
+				"title": "Board Key Selection",
+				"description": "Added a dropdown to select which board the ticket belongs to. Now users only need to choose a board and enter the ticket number.",
+				"type": "feature"
+			},
+			{
+				"title": "Recent Ticket Suggestions",
+				"description": "KroniCode now shows the 5 most recently used tickets as clickable suggestions to quickly populate the ticket input field.",
+				"type": "feature"
+			},
+			{
+				"title": "Release Notes Separated by Type",
+				"description": "KroniCode now shows release notes grouped by category, making it easier to scan new features, fixes, and improvements.",
+				"type": "improvement"
 			},
 			{
 				"title": "Bugfix: Onboarding Tour",
-				"description": "The Onboarding tour was not correctly highlighting elements - this has been fixed."
+				"description": "The Onboarding tour was not correctly highlighting elements - this has been fixed.",
+				"type": "bugfix"
 			}
 		]
 	},
@@ -42,19 +59,23 @@
 		"full": [
 			{
 				"title": "Guided Onboarding Tour",
-				"description": "Added a guided tour to onboard users with the app and it's functions."
+				"description": "Added a guided tour to onboard users with the app and it's functions.",
+				"type": "feature"
 			},
 			{
 				"title": "Auto Reminder Pause Controls",
-				"description": "You can now pause auto reminders! Choose to pause for 15 minutes, 1 hour, the rest of the day, or indefinitely — all from the tray menu for quick access."
+				"description": "You can now pause auto reminders! Choose to pause for 15 minutes, 1 hour, the rest of the day, or indefinitely — all from the tray menu for quick access.",
+				"type": "feature"
 			},
 			{
 				"title": "Logged Time Display",
-				"description": "You can now view your total time logged for today and the current week."
+				"description": "You can now view your total time logged for today and the current week.",
+				"type": "feature"
 			},
 			{
 				"title": "Added dark mode",
-				"description": "You can switch between light and dark themes in Settings."
+				"description": "You can switch between light and dark themes in Settings.",
+				"type": "feature"
 			}
 		]
 	},
@@ -68,27 +89,33 @@
 		"full": [
 			{
 				"title": "Added new setting - Boot with system",
-				"description": "If checked, Kronicode will start with the system on boot."
+				"description": "If checked, Kronicode will start with the system on boot.",
+				"type": "feature"
 			},
 			{
 				"title": "Added a new tray menu display - last logged",
-				"description": "The tray now displays the time of your last successful time log."
+				"description": "The tray now displays the time of your last successful time log.",
+				"type": "feature"
 			},
 			{
 				"title": "Added an Update progress display",
-				"description": "When updates are checked/found, etc, the information is displayed in a toast for user quality-of-life. There's even a progress bar :)"
+				"description": "When updates are checked/found, etc, the information is displayed in a toast for user quality-of-life. There's even a progress bar :)",
+				"type": "feature"
 			},
 			{
 				"title": "Added error boundary",
-				"description": "Any unexpected errors now gracefully show you the big \"OH NO!\" screen."
+				"description": "Any unexpected errors now gracefully show you the big \"OH NO!\" screen.",
+				"type": "improvement"
 			},
 			{
 				"title": "Updated message displays",
-				"description": "Success and error messages now appear in a sleek toast instead of inline."
+				"description": "Success and error messages now appear in a sleek toast instead of inline.",
+				"type": "improvement"
 			},
 			{
 				"title": "Removed tray menu option - \"Show App\"",
-				"description": "This redundant option has been removed to simplify the tray menu."
+				"description": "This redundant option has been removed to simplify the tray menu.",
+				"type": "improvement"
 			}
 		]
 	},
@@ -100,31 +127,38 @@
 		"full": [
 			{
 				"title": "Added Setup Wizard",
-				"description": "New users are guided through a simple setup wizard to securely add their Jira and Tempo credentials."
+				"description": "New users are guided through a simple setup wizard to securely add their Jira and Tempo credentials.",
+				"type": "feature"
 			},
 			{
 				"title": "Added Time Logging Interface",
-				"description": "A streamlined UI for quickly logging time against Jira issues, including saved credentials and preferences."
+				"description": "A streamlined UI for quickly logging time against Jira issues, including saved credentials and preferences.",
+				"type": "feature"
 			},
 			{
 				"title": "Secure Credentials",
-				"description": "API tokens and preferences are stored securely using the system's keychain via Keytar, improving privacy and persistence."
+				"description": "API tokens and preferences are stored securely using the system's keychain via Keytar, improving privacy and persistence.",
+				"type": "feature"
 			},
 			{
 				"title": "Added a tray menu",
-				"description": "Enables users quick access to certain menu options through the tray interface."
+				"description": "Enables users quick access to certain menu options through the tray interface.",
+				"type": "feature"
 			},
 			{
 				"title": "Added the settings page",
-				"description": "A streamlined UI for quick access preferences."
+				"description": "A streamlined UI for quick access preferences.",
+				"type": "feature"
 			},
 			{
 				"title": "Added auto updating",
-				"description": "Streamlined the update process by automatically downloading and installing new updates."
+				"description": "Streamlined the update process by automatically downloading and installing new updates.",
+				"type": "feature"
 			},
 			{
 				"title": "Added release notes",
-				"description": "A UI display of new features/bug fixes/quality of life improvements."
+				"description": "A UI display of new features/bug fixes/quality of life improvements.",
+				"type": "feature"
 			}
 		]
 	}
