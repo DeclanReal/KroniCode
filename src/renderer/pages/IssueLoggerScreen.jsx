@@ -5,6 +5,8 @@ import { Settings, Loader, LogOut } from 'lucide-react';
 import ToastBanner from '../components/ToastBanner.jsx';
 import { OnboardingTour } from '../components/OnboardingTour.jsx';
 import { Dropdown } from '../components/DropDown.jsx';
+import SuggestionTag from '../components/SuggestionTag.jsx';
+import { motion } from 'framer-motion';
 
 export default function IssueLoggerScreen() {
 	const navigate = useNavigate();
@@ -19,6 +21,7 @@ export default function IssueLoggerScreen() {
 	const [thisWeeksTimeLogged, setThisWeeksTimeLogged] = useState('N/A');
 	const [boardKeys, setBoardKeys] = useState([]);
 	const [selectedBoardKey, setSelectedBoardKey] = useState();
+	const [recentTickets, setRecentTickets] = useState([]);
 
 	useEffect(() => {
 		if (!window.api) {
@@ -31,8 +34,9 @@ export default function IssueLoggerScreen() {
 			});
 		}
 
-		retrieveUsersWeeklyWorkLogs()
-		retrieveBoardKeys()
+		retrieveUsersWeeklyWorkLogs();
+		retrieveBoardKeys();
+		retrieveRecentTickets();
 
 		const hasSeenTour = localStorage.getItem('hasSeenTour');
 
@@ -71,6 +75,17 @@ export default function IssueLoggerScreen() {
 		}
 	}
 
+	const retrieveRecentTickets = async () => {
+		try {
+			const result = await window.api.getRecentTickets();
+
+			setRecentTickets(result);
+		} catch (err) {
+			setToast({ message: "❌ Could not retrieve recent tickets", type: "error" });
+			resetToast(4000);
+		}
+	}
+
 	const handleTourFinish = () => {
 		localStorage.setItem('hasSeenTour', 'true');
 		setRunTour(false);
@@ -104,6 +119,8 @@ export default function IssueLoggerScreen() {
 				setToast({ message: "✅ Worklog submitted successfully!", type: "success" });
 				resetToast(3000);
 				await retrieveUsersWeeklyWorkLogs();
+				window.api.addToRecentTickets({ id: crypto.randomUUID(), boardKey: selectedBoardKey, number: ticket });
+				await retrieveRecentTickets();
 			}
 		} catch (err) {
 			setToast({ message: "❌ Something went wrong, please check your inputs and try again", type: "error" });
@@ -169,6 +186,31 @@ export default function IssueLoggerScreen() {
 								/>
 							</div>
 						</div>
+
+						<motion.div
+							initial={{ opacity: 0, y: 4 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.3, ease: 'easeOut' }}
+							className="mt-4 w-full"
+						>
+							<div className="text-xs text-zinc-500 dark:text-zinc-400 font-medium mb-1">
+								Recently used
+							</div>
+
+							<div className="flex flex-nowrap gap-2 pb-2 overflow-x-auto overflow-y-hidden scrollbar-horizontal">
+								{recentTickets.map(ticket => (
+									<SuggestionTag
+										key={ticket.id}
+										label={`${ticket.boardKey}-${ticket.number}`}
+										onClick={(e) => {
+											const [boardKey, ticketNumber] = e.split('-');
+											setSelectedBoardKey(boardKey);
+											setTicket(ticketNumber);
+										}}
+									/>
+								))}
+							</div>
+						</motion.div>
 
 						<span className="font-medium">Start Time</span>
 						<input

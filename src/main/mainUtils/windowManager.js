@@ -40,8 +40,8 @@ function createMainWindow(route = '/popup') {
 	}
 
 	popupWindow = new BrowserWindow({
-		width: 535,
-		height: 650,
+		width: 600,
+		height: 725,
 		alwaysOnTop: false,
 		show: false,
 		focusable: false,
