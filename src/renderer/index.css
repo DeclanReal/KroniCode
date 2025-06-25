@@ -15,4 +15,9 @@
 	.dark input[type="datetime-local"]::-webkit-calendar-picker-indicator {
 		filter: invert(1);
 	}
+
+	.scrollbar-horizontal {
+		scrollbar-width: thin;
+		scrollbar-color: #2563EB transparent; /* Tailwind blue-600 */
+	}
 }

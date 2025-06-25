@@ -17,6 +17,8 @@ function registerIpcHandlers(JiraAPI, TempoAPI, reminderInterval, setReminderTim
 	ipcMain.removeHandler('fetch-board-keys');
 	ipcMain.removeHandler('submit-worklog');
 	ipcMain.removeHandler('fetch-this-weeks-work-logs');
+	ipcMain.removeHandler('add-to-recent-tickets');
+	ipcMain.removeHandler('get-recent-tickets');
 	ipcMain.removeHandler('get-interval');
 	ipcMain.removeHandler('set-interval');
 	ipcMain.removeHandler('load-credentials');
@@ -56,6 +58,20 @@ function registerIpcHandlers(JiraAPI, TempoAPI, reminderInterval, setReminderTim
 		const result = await fetchThisWeeksWorklogs(JiraAPI, TempoAPI);
 
 		return result;
+	});
+
+	ipcMain.handle('add-to-recent-tickets', async (_, ticketToAdd) => {
+		const existing = store.get('recentTickets', []);
+		// move to front if exists, take 5 most recent
+		const updated = [ticketToAdd, ...existing.filter(ticket =>
+			`${ticket.boardKey}-${ticket.number}` !== `${ticketToAdd.boardKey}-${ticketToAdd.number}`
+		)].slice(0, 5);
+
+		store.set('recentTickets', updated);
+	});
+
+	ipcMain.handle('get-recent-tickets', async () => {
+		return store.get('recentTickets');
 	});
 
 	ipcMain.handle('fetch-board-keys', async () => {

@@ -17,6 +17,8 @@ contextBridge.exposeInMainWorld('api', {
 	submitWorklog: (data) => ipcRenderer.invoke('submit-worklog', data),
 	fetchThisWeeksWorklogs: () => ipcRenderer.invoke('fetch-this-weeks-work-logs'),
 	fetchBoardKeys: () => ipcRenderer.invoke('fetch-board-keys'),
+	addToRecentTickets: (ticketToAdd) => ipcRenderer.invoke('add-to-recent-tickets', ticketToAdd),
+	getRecentTickets: () => ipcRenderer.invoke('get-recent-tickets'),
 	saveCredentials: (data) => ipcRenderer.invoke('save-credentials', data),
 	loadCredentials: () => ipcRenderer.invoke('load-credentials'),
 	validateJira: (creds) => ipcRenderer.invoke('validate-jira', creds),
