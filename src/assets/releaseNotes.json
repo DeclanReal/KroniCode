@@ -8,7 +8,8 @@
 			"Bugfix for onboarding tour",
 			"Added Board Key Selection",
 			"Added recent ticket suggestion display",
-			"Improved release notes display"
+			"Improved release notes display",
+			"Polished onboarding tour appearance"
 		],
 		"full": [
 			{
@@ -39,6 +40,11 @@
 			{
 				"title": "Release Notes Separated by Type",
 				"description": "KroniCode now shows release notes grouped by category, making it easier to scan new features, fixes, and improvements.",
+				"type": "improvement"
+			},
+			{
+				"title": "Polished onboarding tour appearance",
+				"description": "Tooltips in the onboarding tour have been resized to better fit their content, removing excess white space for a cleaner look.",
 				"type": "improvement"
 			},
 			{

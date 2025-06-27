@@ -7,36 +7,59 @@ export function OnboardingTour({ run, onFinish }) {
 	const [tourStartModal, setTourStartModal] = useState(true);
 	const [tourEndModal, setTourEndModal] = useState(false);
 
+	const stepToolTipStyle = {
+		tooltip: {
+			padding: '8px 12px',
+			maxWidth: '80%',
+		},
+		tooltipFooter: {
+			marginTop: 0,
+		},
+		buttonNext: {
+			marginTop: 0,
+		},
+		tooltipContent: {
+			padding: '10px 8px'
+		}
+	};
+	const settingToolTipStyle = {
+		...stepToolTipStyle,
+		tooltip: {
+			...stepToolTipStyle.tooltip,
+			maxWidth: '100%',
+		},
+	};
+
 	const steps = [
 		{
 			target: '#formContainer',
 			content: 'Make sure you fill in all these fields before logging time.',
 			disableBeacon: true,
-			title: "Required Fields"
+			styles: stepToolTipStyle,
 		},
 		{
 			target: '#submitWorkLogBtn',
 			content: 'Click here to log your time.',
 			disableBeacon: true,
-			title: "Submitting your work"
+			styles: stepToolTipStyle,
 		},
 		{
 			target: '#loggedTime',
 			content: 'You can view your logged time here.',
 			disableBeacon: true,
-			title: "View your logged time!"
+			styles: stepToolTipStyle,
 		},
 		{
 			target: '#settingsBtn',
 			content: 'Click here to adjust your settings.',
 			disableBeacon: true,
-			title: "Changing your settings"
+			styles: settingToolTipStyle,
 		},
 		{
 			target: '#closeAppBtn',
 			content: 'Click here to quit the app.',
 			disableBeacon: true,
-			title: "Quitting the app"
+			styles: stepToolTipStyle,
 		}
 	];
 
@@ -54,6 +77,7 @@ export function OnboardingTour({ run, onFinish }) {
 						className="btn"
 						onClick={() => {
 							setTourEndModal(false);
+							setTourStartModal(true);
 							onFinish();
 						}}
 					>
@@ -85,9 +109,11 @@ export function OnboardingTour({ run, onFinish }) {
 				continuous
 				showSkipButton
 				showProgress
+				hideCloseButton
 				disableOverlayClose
 				disableScrolling
 				disableBeacon
+				disableCloseOnEsc
 				callback={(data) => {
 					const { status } = data;
 					if (status === 'skipped') onFinish();
