@@ -198,17 +198,22 @@ export default function IssueLoggerScreen() {
 							</div>
 
 							<div className="flex flex-nowrap gap-2 pb-2 overflow-x-auto overflow-y-hidden scrollbar-horizontal">
-								{recentTickets.map(ticket => (
-									<SuggestionTag
-										key={ticket.id}
-										label={`${ticket.boardKey}-${ticket.number}`}
-										onClick={(e) => {
-											const [boardKey, ticketNumber] = e.split('-');
-											setSelectedBoardKey(boardKey);
-											setTicket(ticketNumber);
-										}}
-									/>
-								))}
+								{recentTickets?.length > 0 ? (
+									recentTickets.map(ticket => (
+										<SuggestionTag
+											key={ticket.id}
+											label={`${ticket.boardKey}-${ticket.number}`}
+											onClick={() => {
+												setSelectedBoardKey(ticket.boardKey);
+												setTicket(ticket.number);
+											}}
+										/>
+									))
+								) : (
+									<div>
+										<p>N/A</p>
+									</div>
+								)}
 							</div>
 						</motion.div>
 
