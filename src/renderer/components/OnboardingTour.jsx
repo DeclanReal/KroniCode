@@ -6,33 +6,60 @@ import { useState } from 'react';
 export function OnboardingTour({ run, onFinish }) {
 	const [tourStartModal, setTourStartModal] = useState(true);
 	const [tourEndModal, setTourEndModal] = useState(false);
-	const darkMode = localStorage.getItem('darkMode') === 'true';
+
+	const stepToolTipStyle = {
+		tooltip: {
+			padding: '8px 12px',
+			maxWidth: '80%',
+		},
+		tooltipFooter: {
+			marginTop: 0,
+		},
+		buttonNext: {
+			marginTop: 0,
+		},
+		tooltipContent: {
+			padding: '10px 8px'
+		}
+	};
+	const settingToolTipStyle = {
+		...stepToolTipStyle,
+		tooltip: {
+			...stepToolTipStyle.tooltip,
+			maxWidth: '100%',
+		},
+	};
 
 	const steps = [
 		{
 			target: '#formContainer',
 			content: 'Make sure you fill in all these fields before logging time.',
 			disableBeacon: true,
+			styles: stepToolTipStyle,
 		},
 		{
 			target: '#submitWorkLogBtn',
 			content: 'Click here to log your time.',
 			disableBeacon: true,
+			styles: stepToolTipStyle,
 		},
 		{
 			target: '#loggedTime',
 			content: 'You can view your logged time here.',
 			disableBeacon: true,
+			styles: stepToolTipStyle,
 		},
 		{
 			target: '#settingsBtn',
 			content: 'Click here to adjust your settings.',
 			disableBeacon: true,
+			styles: settingToolTipStyle,
 		},
 		{
 			target: '#closeAppBtn',
 			content: 'Click here to quit the app.',
 			disableBeacon: true,
+			styles: stepToolTipStyle,
 		}
 	];
 
@@ -50,6 +77,7 @@ export function OnboardingTour({ run, onFinish }) {
 						className="btn"
 						onClick={() => {
 							setTourEndModal(false);
+							setTourStartModal(true);
 							onFinish();
 						}}
 					>
@@ -81,9 +109,11 @@ export function OnboardingTour({ run, onFinish }) {
 				continuous
 				showSkipButton
 				showProgress
+				hideCloseButton
 				disableOverlayClose
 				disableScrolling
 				disableBeacon
+				disableCloseOnEsc
 				callback={(data) => {
 					const { status } = data;
 					if (status === 'skipped') onFinish();
@@ -95,11 +125,11 @@ export function OnboardingTour({ run, onFinish }) {
 				styles={{
 					options: {
 						zIndex: 10000,
-						arrowColor: darkMode ? '#1f2937' : '#fff',            // Dark bg or light bg
-						backgroundColor: darkMode ? '#1f2937' : '#fff',       // Overlay tooltip background
-						overlayColor: darkMode ? 'rgba(31, 41, 55, 0.75)' : 'rgba(255,255,255,0.75)', // Overlay color
-						primaryColor: darkMode ? '#3b82f6' : '#2563eb',       // Highlighted button color
-						textColor: darkMode ? '#d1d5db' : '#111827',          // Text color
+						arrowColor: '#fff',						// Overlay arrow color
+						backgroundColor: '#fff',				// Overlay background
+						overlayColor: 'rgba(0, 0, 0, 0.75)',	// Background tinting
+						primaryColor: '#2563eb',				// Overlay button color
+						textColor: '#111827',					// Overlay Text color
 					},
 				}}
 			/>

@@ -7,15 +7,19 @@ import IssueLoggerScreen from './pages/IssueLoggerScreen';
 import SettingsScreen from './pages/SettingsScreen';
 import SetupWizard from './setupWizard/SetupWizard';
 import WhatsNewPage from './pages/WhatsNewPage';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import WhatsNewModal from './components/WhatsNewModal';
 import ToastBanner from './components/ToastBanner';
-import { ThemeProvider } from './components/ThemeContext';
+import { ThemeContext, ThemeProvider } from './components/ThemeContext';
+import SplashScreen from './pages/SplashScreen';
+import { useLocation } from 'react-router-dom';
 
 function AppInsideErrorBoundary() {
 	const [version, setVersion] = useState(null);
 	const [fatalError, setFatalError] = useState(null);
 	const [toast, setToast] = useState(null);
+	const { toggleDarkMode } = useContext(ThemeContext);
+	const location = useLocation();
 
 	function handleToastStatusChecking({ status, data }) {
 		switch (status) {
@@ -45,10 +49,31 @@ function AppInsideErrorBoundary() {
 		}
 	}
 
+	function handleUserThemePreference() {
+		const saved = localStorage.getItem('darkMode');
+
+		if (saved === null) {
+			const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+			// Flip to dark only if the system prefers it and default is light
+			if (prefersDark) {
+				toggleDarkMode();
+				localStorage.setItem('darkMode', 'true');
+			} else {
+				localStorage.setItem('darkMode', 'false');
+			}
+		}
+	}
+
 	useEffect(() => {
+		if (location.pathname === '/splash') return;
+
 		const handler = (message) => {
 			setFatalError(new Error(message));
 		};
+
+		// on load check if we have saved theme, if not, use the users setting preference
+		handleUserThemePreference();
 
 		window.api.getAppVersion().then(setVersion);
 
@@ -63,12 +88,16 @@ function AppInsideErrorBoundary() {
 		};
 	}, []);
 
+	if (location.pathname === '/splash') {
+		return <SplashScreen />;
+	}
+
 	if (fatalError) throw fatalError;
 
 	if (!version) return null;
 
 	return (
-		<ThemeProvider>
+		<>
 			<ToastBanner
 				message={toast?.message}
 				visible={!!toast}
@@ -85,14 +114,16 @@ function AppInsideErrorBoundary() {
 				{/* Fallback route */}
 				<Route path="*" element={<div>404 Not Found</div>} />
 			</Routes>
-		</ThemeProvider>
+		</>
 	)
 }
 
 function App() {
 	return (
 		<ErrorBoundary>
-			<AppInsideErrorBoundary />
+			<ThemeProvider>
+				<AppInsideErrorBoundary />
+			</ThemeProvider>
 		</ErrorBoundary>
 	);
 }

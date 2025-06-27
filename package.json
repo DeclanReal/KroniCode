@@ -54,7 +54,6 @@
 		"@radix-ui/react-switch": "^1.2.5",
 		"@radix-ui/react-tooltip": "^1.2.7",
 		"axios": "^1.10.0",
-		"dotenv": "^16.5.0",
 		"electron-is-dev": "^3.0.1",
 		"electron-store": "^10.1.0",
 		"electron-updater": "^6.6.2",
