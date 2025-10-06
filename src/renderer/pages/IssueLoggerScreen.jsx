@@ -60,9 +60,9 @@ export default function IssueLoggerScreen() {
 
 	const retrieveBoardKeys = async () => {
 		try {
-			const result = await window.api.fetchBoardKeys();
+			const results = await window.api.fetchBoardKeys();
 
-			const boards = result.values.map(board => ({
+			const boards = results.map(board => ({
 				id: board.id,
 				key: board.key,
 				name: board.name
