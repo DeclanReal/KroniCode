@@ -3,8 +3,16 @@ import { useEffect, useRef, useState } from 'react';
 
 export function Dropdown({ defaultValue = 'Select Option', options, value, onChange }) {
 	const [open, setOpen] = useState(false);
+	const [search, setSearch] = useState('');
 
 	const containerRef = useRef(null);
+	const searchRef = useRef(null);
+
+	useEffect(() => {
+		if (open && searchRef.current) {
+			searchRef.current.focus();
+		}
+	}, [open]);
 
 	// Close dropdown on outside click
 	useEffect(() => {
@@ -25,11 +33,20 @@ export function Dropdown({ defaultValue = 'Select Option', options, value, onCha
 		};
 	}, [open]);
 
+	// (match from start of key)
+	const filteredOptions = options.filter(option =>
+		option.key.toLowerCase().includes(search.toLowerCase()) ||
+		option.name.toLowerCase().includes(search.toLowerCase())
+	);
+
 	return (
 		<div ref={containerRef} className="relative w-full max-w-xs">
 			<button
 				type="button"
-				onClick={() => setOpen(prev => !prev)}
+				onClick={() => {
+					setOpen(prev => !prev);
+					setSearch(''); // reset search when reopening
+				}}
 				className="w-full border rounded px-2 py-1 flex justify-between items-center dark:bg-gray-800 dark:text-white bg-white text-black cursor-pointer"
 			>
 				<span>{value || defaultValue}</span>
@@ -45,23 +62,39 @@ export function Dropdown({ defaultValue = 'Select Option', options, value, onCha
 			</button>
 
 			{open && (
-				<ul className="absolute z-10 mt-1 w-full border rounded bg-white dark:bg-gray-700 shadow">
-					{options.map(option => (
-						<li
-							key={option.id}
-							onClick={() => {
-								onChange(option.key);
-								setOpen(false);
-							}}
-							className="px-2 py-1 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 text-black dark:text-white"
-						>
-							[{option.key}] {option.name}
-						</li>
-					))}
+				<ul className="absolute z-10 mt-1 w-full border rounded bg-white dark:bg-gray-700 shadow max-h-48 overflow-y-auto">
+					<li className="p-1">
+						<input
+							ref={searchRef}
+							type="text"
+							placeholder="Search..."
+							value={search}
+							onChange={e => setSearch(e.target.value)}
+							className="w-full px-2 py-1 border rounded dark:bg-gray-800 dark:text-white bg-white text-black"
+						/>
+					</li>
+
+					{filteredOptions.length > 0 ? (
+						filteredOptions.map(option => (
+							<li
+								key={option.id}
+								onClick={() => {
+									onChange(option.key);
+									setOpen(false);
+								}}
+								className="px-2 py-1 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 text-black dark:text-white"
+							>
+								[{option.key}] {option.name}
+							</li>
+						))
+					) : (
+						<li className="px-2 py-1 text-gray-500 dark:text-gray-400">No results</li>
+					)}
 				</ul>
 			)}
 		</div>
 	);
+
 };
 
 Dropdown.propTypes = {

@@ -1,5 +1,24 @@
 [
 	{
+		"version": "1.3.1",
+		"minimal": [
+			"Resolved issue causing board key selection to fail",
+			"Resolved issue limiting board key loading to 50 entries"
+		],
+		"full": [
+			{
+				"title": "Resolved issue causing board key selection to fail",
+				"description": "Board keys now display correctly within a fixed selection window, preventing overflow off the apps display. A search bar has also been added for easier navigation.",
+				"type": "bugfix"
+			},
+			{
+				"title": "Resolved issue limiting board key loading to 50 entries",
+				"description": "The board key retrieval process now supports pagination, ensuring all board keys are loaded regardless of quantity.",
+				"type": "bugfix"
+			}
+		]
+	},
+	{
 		"version": "1.3.0",
 		"minimal": [
 			"System Theme Preference Support",
