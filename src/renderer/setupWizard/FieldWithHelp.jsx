@@ -25,11 +25,18 @@ export default function FieldWithHelp({ label, children, helpImage, helpText }) 
 								className="bg-gray-800 text-white text-xs px-2 py-1 rounded shadow-sm z-50 animate-fade-in"
 							>
 								Show help
-								<Tooltip.Arrow className="fill-gray-800" />
 							</Tooltip.Content>
 						</Tooltip.Portal>
 					</Tooltip.Root>
 				</Tooltip.Provider>
+				
+				{/* Inline label with left arrow */}
+				<div className="flex items-center gap-1">
+					<div className="w-0 h-0 border-t-4 border-b-4 border-r-4 border-t-transparent border-b-transparent border-r-gray-700" />
+					<div className="bg-gray-700 text-white text-[10px] px-2 py-0.5 rounded-md shadow">
+						Click me for help
+					</div>
+				</div>
 			</div>
 
 			{children}

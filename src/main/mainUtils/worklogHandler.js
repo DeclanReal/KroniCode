@@ -18,6 +18,8 @@ async function submitWorklog(data, JiraAPI, TempoAPI) {
 
 	const res = await TempoAPI.post('/worklogs', workItem);
 	if (res.status === 200) updateTray(time);
+
+	return res.status;
 }
 
 export { submitWorklog };

@@ -4,18 +4,24 @@ import { useNavigate } from 'react-router-dom';
 import { Toggle } from '../components/Toggle';
 import ToastBanner from '../components/ToastBanner';
 import { ThemeContext } from '../components/ThemeContext';
+import { Business } from '../business/Business';
 
 export default function SettingsScreen() {
 	const navigate = useNavigate();
+
+	// form data states
 	const [interval, setIntervalValue] = useState('15');
 	const [jiraDomain, setJiraDomain] = useState('');
 	const [jiraEmail, setJiraEmail] = useState('');
 	const [jiraToken, setJiraToken] = useState('');
 	const [tempoToken, setTempoToken] = useState('');
-	const [loading, setLoading] = useState(false);
 	const [startOnBoot, setStartOnBoot] = useState(false);
-	const [toast, setToast] = useState(null);
 	const { darkMode, toggleDarkMode } = useContext(ThemeContext);
+
+	// util states
+	const [loading, setLoading] = useState(false);
+	const [toast, setToast] = useState(null);
+	const [business] = useState(new Business(setToast));
 
 	useEffect(() => {
 		if (!window.api) {
@@ -39,37 +45,9 @@ export default function SettingsScreen() {
 		}, timeOut);
 	}
 
-	const handleSave = async () => {
-		setLoading(true);
-
-		try {
-			window.api.setInterval(parseInt(interval));
-			window.api.setStartup(startOnBoot);
-			localStorage.setItem('darkMode', darkMode);
-
-			const { success } = await window.api.saveCredentials({
-				jiraDomain,
-				jiraEmail,
-				jiraToken,
-				tempoToken,
-			});
-
-			if (!success) {
-				setToast({ message: "❌ Something went wrong, please check your inputs and try again", type: "error" });
-				resetToast(8000);
-			} else {
-				setToast({ message: "✅ Settings saved!", type: "success" });
-				resetToast(3000);
-			}
-		} catch (err) {
-			setToast({ message: "❌ Something went wrong, please check your inputs and try again", type: "error" });
-			resetToast(8000);
-		} finally {
-			setLoading(false);
-		}
-	};
-
 	const handleBack = () => {
+		// first check if they toggled darkmode and did not save the value
+		// if unsaved, switch back to mode prior to toggle
 		const saved = localStorage.getItem('darkMode') === 'true';
 		const originalMode = saved;
 
@@ -79,6 +57,16 @@ export default function SettingsScreen() {
 		}
 
 		navigate('/popup');
+	}
+
+	const handleSave = async () => {
+		const data = { jiraDomain, jiraEmail, jiraToken, tempoToken, interval, startOnBoot, darkMode };
+		setLoading(true);
+
+		await business.handleSettingsSave(data);
+
+		setLoading(false);
+		resetToast(5000);
 	}
 
 	return (

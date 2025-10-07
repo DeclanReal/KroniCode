@@ -22,6 +22,7 @@ export function OnboardingTour({ run, onFinish }) {
 			padding: '10px 8px'
 		}
 	};
+
 	const settingToolTipStyle = {
 		...stepToolTipStyle,
 		tooltip: {

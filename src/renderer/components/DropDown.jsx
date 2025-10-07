@@ -14,7 +14,7 @@ export function Dropdown({ defaultValue = 'Select Option', options, value, onCha
 		}
 	}, [open]);
 
-	// Close dropdown on outside click
+	// handle clicks outside the dropdown to close the dropdown menu
 	useEffect(() => {
 		const handleClickOutside = (event) => {
 			if (containerRef.current && !containerRef.current.contains(event.target)) {
