@@ -12,6 +12,7 @@ export default function WhatsNewModal({ version }) {
 	// Show modal once per new version
 	useEffect(() => {
 		const checkShowWhatsNew = async () => {
+			// only show what's new to people who have completed the setup process
 			const { setupComplete } = await window.api.loadCredentials();
 
 			setShowWhatsNew(setupComplete);
@@ -22,6 +23,7 @@ export default function WhatsNewModal({ version }) {
 		const lastSeenVersion = localStorage.getItem('lastSeenVersion') || '';
 
 		if (lastSeenVersion !== version) {
+			// show release notes if the app is updated
 			setIsVisible(true);
 			localStorage.setItem('lastSeenVersion', version);
 		}

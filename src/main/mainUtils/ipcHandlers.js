@@ -51,7 +51,9 @@ function registerIpcHandlers(JiraAPI, TempoAPI, reminderInterval, setReminderTim
 	});
 
 	ipcMain.handle('submit-worklog', async (_, data) => {
-		await submitWorklog(data, JiraAPI, TempoAPI);
+		const result = await submitWorklog(data, JiraAPI, TempoAPI);
+
+		return result;
 	});
 
 	ipcMain.handle('fetch-this-weeks-work-logs', async (_) => {

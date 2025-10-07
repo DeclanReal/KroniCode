@@ -1,31 +1,39 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getCurrentDateTime, getTotalTimeSummary } from '../../utils/functions.js';
+import { getCurrentDateTime } from '../../utils/functions.js';
 import { Settings, Loader, LogOut } from 'lucide-react';
 import ToastBanner from '../components/ToastBanner.jsx';
 import { OnboardingTour } from '../components/OnboardingTour.jsx';
 import { Dropdown } from '../components/DropDown.jsx';
-import SuggestionTag from '../components/SuggestionTag.jsx';
-import { motion } from 'framer-motion';
+import { Business } from '../business/Business.js';
+import { SuggestionTags } from '../components/SuggestionTagsComponent.jsx';
 
 export default function IssueLoggerScreen() {
 	const navigate = useNavigate();
-	const [ticket, setTicket] = useState('');
-	const [startTime, setStartTime] = useState(getCurrentDateTime());
-	const [duration, setDuration] = useState('15');
-	const [description, setDescription] = useState('Dev work');
-	const [loading, setLoading] = useState(false);
-	const [toast, setToast] = useState(null);
-	const [runTour, setRunTour] = useState(false);
+
+	// time logs display states
 	const [todaysTimeLogged, setTodaysTimeLogged] = useState('N/A');
 	const [thisWeeksTimeLogged, setThisWeeksTimeLogged] = useState('N/A');
+
+	// form data states
 	const [boardKeys, setBoardKeys] = useState([]);
-	const [selectedBoardKey, setSelectedBoardKey] = useState();
 	const [recentTickets, setRecentTickets] = useState([]);
+	const [ticket, setTicket] = useState('');
+	const [selectedBoardKey, setSelectedBoardKey] = useState();
+	const [description, setDescription] = useState('Dev work');
+	const [duration, setDuration] = useState('15');
+	const [startTime, setStartTime] = useState(getCurrentDateTime());
+
+	// toast and util states
+	const [toast, setToast] = useState(null);
+	const [loading, setLoading] = useState(false);
+	const [runTour, setRunTour] = useState(false);
+	const [business] = new useState(new Business(setToast));
 
 	useEffect(() => {
 		if (!window.api) {
 			console.error('Electron API not available');
+			setToast({ message: "❌ API Clients not available, please restart the app.", type: "error" });
 		}
 
 		if (window.api.onRunGuidedTour) {
@@ -34,9 +42,13 @@ export default function IssueLoggerScreen() {
 			});
 		}
 
-		retrieveUsersWeeklyWorkLogs();
-		retrieveBoardKeys();
-		retrieveRecentTickets();
+		const loadDisplays = async () => {
+			await updateDisplays();
+			await business.retrieveBoardKeys(setBoardKeys);
+		}
+
+		loadDisplays();
+		resetToast(4000)
 
 		const hasSeenTour = localStorage.getItem('hasSeenTour');
 
@@ -45,51 +57,43 @@ export default function IssueLoggerScreen() {
 		}
 	}, []);
 
-	const retrieveUsersWeeklyWorkLogs = async () => {
-		try {
-			const result = await window.api.fetchThisWeeksWorklogs();
-
-			const { today, week } = getTotalTimeSummary(result.results);
-			setTodaysTimeLogged(today);
-			setThisWeeksTimeLogged(week);
-		} catch (err) {
-			setToast({ message: "❌ Could not retrieve this weeks worklogs", type: "error" });
-			resetToast(4000);
-		}
-	}
-
-	const retrieveBoardKeys = async () => {
-		try {
-			const results = await window.api.fetchBoardKeys();
-
-			const boards = results.map(board => ({
-				id: board.id,
-				key: board.key,
-				name: board.name
-			}));
-
-			setBoardKeys(boards);
-		} catch (err) {
-			setToast({ message: "❌ Could not retrieve board keys", type: "error" });
-			resetToast(4000);
-		}
-	}
-
-	const retrieveRecentTickets = async () => {
-		try {
-			const result = await window.api.getRecentTickets();
-
-			setRecentTickets(result);
-		} catch (err) {
-			setToast({ message: "❌ Could not retrieve recent tickets", type: "error" });
-			resetToast(4000);
-		}
-	}
-
-	const handleTourFinish = () => {
-		localStorage.setItem('hasSeenTour', 'true');
-		setRunTour(false);
+	const handleQuit = () => {
+		window.api.quitApp();
 	};
+
+	const handleSubmit = async () => {
+		if (!window.api) {
+			setToast({ message: "❌ API Clients not available, please restart the app.", type: "error" });
+
+			return;
+		}
+
+		setLoading(true);
+
+		const success = business.handleWorklogSubmit(setLoading, { selectedBoardKey, ticket, startTime, duration, description });
+
+		if (success) {
+			setToast({ message: "✅ Worklog submitted successfully!", type: "success" });
+
+			await updateDisplays();
+
+			resetToast(3000)
+		} else {
+			setToast({ message: "❌ Something went wrong, please check your inputs and try again", type: "error" });
+			resetToast(8000);
+		}
+
+		setLoading(false);
+	}
+
+	const updateDisplays = async () => {
+		// refresh users logged time
+		await business.retrieveUsersWeeklyWorkLogs(setTodaysTimeLogged, setThisWeeksTimeLogged);
+
+		// update recent tickets display
+		window.api.addToRecentTickets({ id: crypto.randomUUID(), boardKey: selectedBoardKey, number: ticket });
+		await business.retrieveRecentTickets(setRecentTickets);
+	}
 
 	const resetToast = (timeOut) => {
 		setTimeout(() => {
@@ -97,41 +101,9 @@ export default function IssueLoggerScreen() {
 		}, timeOut);
 	}
 
-	const handleSubmit = async () => {
-		if (!window.api) {
-			setToast({ message: "❌ API Clients not available", type: "error" });
-			resetToast(5000);
-
-			return;
-		}
-
-		setLoading(true);
-
-		try {
-			const formattedTicket = `${selectedBoardKey}-${ticket}`;
-
-			const result = await window.api.submitWorklog({ formattedTicket, startTime, duration, description });
-
-			if (result?.error) {
-				setToast({ message: "❌ Something went wrong, please check your inputs and try again", type: "error" });
-				resetToast(8000);
-			} else {
-				setToast({ message: "✅ Worklog submitted successfully!", type: "success" });
-				resetToast(3000);
-				await retrieveUsersWeeklyWorkLogs();
-				window.api.addToRecentTickets({ id: crypto.randomUUID(), boardKey: selectedBoardKey, number: ticket });
-				await retrieveRecentTickets();
-			}
-		} catch (err) {
-			setToast({ message: "❌ Something went wrong, please check your inputs and try again", type: "error" });
-			resetToast(8000);
-		} finally {
-			setLoading(false);
-		}
-	};
-
-	const handleQuit = () => {
-		window.api.quitApp();
+	const handleTourFinish = () => {
+		localStorage.setItem('hasSeenTour', 'true');
+		setRunTour(false);
 	};
 
 	return (
@@ -155,7 +127,8 @@ export default function IssueLoggerScreen() {
 					/>
 					<Settings
 						id='settingsBtn'
-						className="absolute top-2 right-2 h-6 w-6 text-gray-600 hover:text-gray-900 cursor-pointer dark:text-white dark:hover:text-gray-500"
+						className="absolute top-2 right-2 h-6 w-6 text-gray-600 hover:text-gray-900 
+						cursor-pointer dark:text-white dark:hover:text-gray-500"
 						onClick={() => navigate('/settings')}
 						aria-label="Open Settings"
 					/>
@@ -187,35 +160,7 @@ export default function IssueLoggerScreen() {
 							</div>
 						</div>
 
-						<motion.div
-							initial={{ opacity: 0, y: 4 }}
-							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.3, ease: 'easeOut' }}
-							className="mt-4 w-full"
-						>
-							<div className="text-xs text-zinc-500 dark:text-zinc-400 font-medium mb-1">
-								Recently used
-							</div>
-
-							<div className="flex flex-nowrap gap-2 pb-2 overflow-x-auto overflow-y-hidden scrollbar-horizontal">
-								{recentTickets?.length > 0 ? (
-									recentTickets.map(ticket => (
-										<SuggestionTag
-											key={ticket.id}
-											label={`${ticket.boardKey}-${ticket.number}`}
-											onClick={() => {
-												setSelectedBoardKey(ticket.boardKey);
-												setTicket(ticket.number);
-											}}
-										/>
-									))
-								) : (
-									<div>
-										<p>N/A</p>
-									</div>
-								)}
-							</div>
-						</motion.div>
+						<SuggestionTags recentTickets={recentTickets} setSelectedBoardKey={setSelectedBoardKey} setTicket={setTicket} />
 
 						<span className="font-medium">Start Time</span>
 						<input
