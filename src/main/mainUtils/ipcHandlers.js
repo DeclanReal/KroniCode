@@ -25,6 +25,7 @@ function registerIpcHandlers(JiraAPI, TempoAPI, reminderInterval, setReminderTim
 	ipcMain.removeHandler('validate-jira');
 	ipcMain.removeHandler('validate-tempo');
 
+	// App control
 	ipcMain.handle('quit-app', async () => {
 		setIsQuitting(true);
 		app.quit();
@@ -49,52 +50,9 @@ function registerIpcHandlers(JiraAPI, TempoAPI, reminderInterval, setReminderTim
 			path: process.execPath,
 		});
 	});
+	// End App control
 
-	ipcMain.handle('submit-worklog', async (_, data) => {
-		const result = await submitWorklog(data, JiraAPI, TempoAPI);
-
-		return result;
-	});
-
-	ipcMain.handle('fetch-this-weeks-work-logs', async (_) => {
-		const result = await fetchThisWeeksWorklogs(JiraAPI, TempoAPI);
-
-		return result;
-	});
-
-	ipcMain.handle('add-to-recent-tickets', async (_, ticketToAdd) => {
-		const existing = store.get('recentTickets', []);
-		// move to front if exists, take 5 most recent
-		const updated = [ticketToAdd, ...existing.filter(ticket =>
-			`${ticket.boardKey}-${ticket.number}` !== `${ticketToAdd.boardKey}-${ticketToAdd.number}`
-		)].slice(0, 5);
-
-		store.set('recentTickets', updated);
-	});
-
-	ipcMain.handle('get-recent-tickets', async () => {
-		return store.get('recentTickets');
-	});
-
-	ipcMain.handle('fetch-board-keys', async () => {
-		const result = await fetchBoardKeys(JiraAPI);
-
-		return result;
-	});
-
-	ipcMain.handle('get-interval', () => {
-		// fallback to default if nothing saved yet
-		return store.get('popupInterval', reminderInterval / 60000);
-	});
-
-	ipcMain.handle('set-interval', (_, minutes) => {
-		reminderInterval = minutes * 60 * 1000;
-		store.set('popupInterval', minutes);
-		setReminderTimerFn(reminderInterval);
-	});
-
-	ipcMain.handle('load-credentials', loadCredentials);
-
+	// User setup token validation
 	ipcMain.handle('validate-jira', async (_, { domain, email, token }) => {
 		const instance = axios.create({
 			baseURL: `https://${domain}/rest/api/3`,
@@ -125,6 +83,56 @@ function registerIpcHandlers(JiraAPI, TempoAPI, reminderInterval, setReminderTim
 
 		return Array.isArray(res.data.results);
 	});
+	// End User setup token validation
+
+	// Worklog submission and retrieval
+	ipcMain.handle('submit-worklog', async (_, data) => {
+		const result = await submitWorklog(data, JiraAPI, TempoAPI);
+
+		return result;
+	});
+
+	ipcMain.handle('fetch-this-weeks-work-logs', async (_) => {
+		const result = await fetchThisWeeksWorklogs(JiraAPI, TempoAPI);
+
+		return result;
+	});
+
+	ipcMain.handle('fetch-board-keys', async () => {
+		const result = await fetchBoardKeys(JiraAPI);
+
+		return result;
+	});
+	// End Worklog submission and retrieval
+
+	// User data handlers
+	ipcMain.handle('get-interval', () => {
+		// fallback to default if nothing saved yet
+		return store.get('popupInterval', reminderInterval / 60000);
+	});
+
+	ipcMain.handle('set-interval', (_, minutes) => {
+		reminderInterval = minutes * 60 * 1000;
+		store.set('popupInterval', minutes);
+		setReminderTimerFn(reminderInterval);
+	});
+
+	ipcMain.handle('add-to-recent-tickets', async (_, ticketToAdd) => {
+		const existing = store.get('recentTickets', []);
+		// move to front if exists, take 5 most recent
+		const updated = [ticketToAdd, ...existing.filter(ticket =>
+			`${ticket.boardKey}-${ticket.number}` !== `${ticketToAdd.boardKey}-${ticketToAdd.number}`
+		)].slice(0, 5);
+
+		store.set('recentTickets', updated);
+	});
+
+	ipcMain.handle('get-recent-tickets', async () => {
+		return store.get('recentTickets');
+	});
+
+	ipcMain.handle('load-credentials', loadCredentials);
+	// End User data handlers
 }
 
 export { registerIpcHandlers };
